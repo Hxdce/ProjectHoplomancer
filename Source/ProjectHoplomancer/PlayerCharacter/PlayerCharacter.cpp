@@ -26,6 +26,9 @@ APlayerCharacter::APlayerCharacter()
 	// Used for smooth crouching.
 	CrouchEyeOffset = FVector(0.0f);
 	CrouchSpeed = 12.0f;
+
+	// Dev variables.
+	DevProjectileFirerate = 0.25f;
 }
 
 
@@ -61,6 +64,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump);
 		EnhancedInputComponent->BindAction(CrouchStartAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartCrouch);
 		EnhancedInputComponent->BindAction(CrouchStopAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StopCrouch);
+		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::PrimaryAttack);
+		EnhancedInputComponent->BindAction(SecondaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SecondaryAttack);
 	}
 
 }
@@ -144,6 +149,59 @@ void APlayerCharacter::CalcCamera(float DeltaTime, struct FMinimalViewInfo& OutR
 		PlayerCamera->GetCameraView(DeltaTime, OutResult);
 		OutResult.Location += CrouchEyeOffset;
 	}
+}
+
+
+// Primary attack!
+void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
+{
+	// Dev code for testing firing projectiles.
+
+	// Can't fire faster than weapon firerate.
+	if (GetWorld()->GetTimeSeconds() < DevProjectileNextFireTime)
+	{
+		return;
+	}
+
+	if (DevProjectileClass)
+	{
+		// Get the camera transform.
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+		// Set MuzzleOffset to spawn projectiles slightly in front of the camera.
+		MuzzleOffset.Set(50.0f, 0.0f, 0.0f);
+
+		// Transform MuzzleOffset from camera space to world space.
+		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+		// Get the camera rotation as the muzzle rotation.
+		FRotator MuzzleRotation = CameraRotation;
+
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			FActorSpawnParameters SP;
+			SP.Owner = this;
+			SP.Instigator = GetInstigator();
+
+			ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(DevProjectileClass, MuzzleLocation, MuzzleRotation, SP);
+			if (Projectile)
+			{
+				// Set the projectile's initial trajectory.
+				FVector LaunchDirection = MuzzleRotation.Vector();
+				Projectile->FireInDirection(LaunchDirection);
+				DevProjectileNextFireTime = GetWorld()->GetTimeSeconds() + DevProjectileFirerate;
+			}
+		}
+	}
+}
+
+
+// Secondary attack!
+void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
+{
 }
 
 

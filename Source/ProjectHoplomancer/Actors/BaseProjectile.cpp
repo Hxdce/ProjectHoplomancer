@@ -12,11 +12,12 @@ ABaseProjectile::ABaseProjectile()
 	Collider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
 	Collider->InitSphereRadius(4.0f);
 	RootComponent = Collider;
-	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
-	ProjectileMovement->UpdatedComponent = Collider;
-	ProjectileMovement->InitialSpeed = 1000.0f;
-	ProjectileMovement->MaxSpeed = 1000.0f;
-	ProjectileMovement->bRotationFollowsVelocity = true;
+	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
+	MovementComponent->UpdatedComponent = Collider;
+	MovementComponent->InitialSpeed = 3000.0f;
+	MovementComponent->MaxSpeed = 3000.0f;
+	MovementComponent->bRotationFollowsVelocity = true;
+	MovementComponent->ProjectileGravityScale = 0.0f;
 
 	InitialLifeSpan = 5.0f;
 }
@@ -39,5 +40,10 @@ void ABaseProjectile::Tick(float DeltaTime)
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
 {
 
+}
+
+void ABaseProjectile::FireInDirection(const FVector& ShootDirection)
+{
+	MovementComponent->Velocity = ShootDirection * MovementComponent->InitialSpeed;
 }
 

@@ -9,7 +9,10 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 
-// This include stays at the bottom:
+// Includes from project code:
+#include "../Actors/BaseProjectile.h"
+
+// This include always comes last:
 #include "PlayerCharacter.generated.h"
 
 
@@ -28,15 +31,15 @@ public:
 	APlayerCharacter();
 
 	void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
-
 	void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
-
 	void CalcCamera(float DeltaTime, struct FMinimalViewInfo& OutResult) override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+	// Player Controls.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Camera)
 	UCameraComponent* PlayerCamera;
 
@@ -58,17 +61,40 @@ protected:
 	UPROPERTY(EditAnywhere, Category=Input)
 	UInputAction* CrouchStopAction;
 
+	UPROPERTY(EditAnywhere, Category=Input)
+	UInputAction* PrimaryAttackAction;
+
+	UPROPERTY(EditAnywhere, Category=Input)
+	UInputAction* SecondaryAttackAction;
+
 
 	// Used for smooth crouching.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Crouch)
 	FVector CrouchEyeOffset;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Crouch)
 	float CrouchSpeed;
+
+
+	// Dev Projectile.
+	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	TSubclassOf<class ABaseProjectile> DevProjectileClass;
+	// Dev Projectile Firerate.
+	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	double DevProjectileFirerate;
+
+	double DevProjectileNextFireTime;
+
+	// Gun muzzle offset from the camera location.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	FVector MuzzleOffset;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void StartCrouch(const FInputActionValue& Value);
 	void StopCrouch(const FInputActionValue& Value);
+	void PrimaryAttack(const FInputActionValue& Value);
+	void SecondaryAttack(const FInputActionValue& Value);
 
 public:	
 	// Called every frame

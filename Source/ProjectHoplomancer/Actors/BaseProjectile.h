@@ -27,17 +27,24 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Collider component.
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
 	class USphereComponent* Collider;
 
+	// Projectile movement.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
-	class UProjectileMovementComponent* ProjectileMovement;
+	class UProjectileMovementComponent* MovementComponent;
 
-	UFUNCTION()
-		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
-			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult& Hit);
-
+	// Damage value.
 	UPROPERTY(EditAnywhere)
-		float DamageValue = 8.0f;
+	float DamageValue = 8.0f;
+
+	// Function to invoke when hitting something.
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+		bool bFromSweep, const FHitResult& Hit);
+
+	// Function that initializes the projectile to shoot in a given direction.
+	void FireInDirection(const FVector& ShootDirection);
 };
