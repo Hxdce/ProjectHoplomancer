@@ -170,8 +170,8 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 		FRotator CameraRotation;
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
-		// Set MuzzleOffset to spawn projectiles slightly in front of the camera.
-		MuzzleOffset.Set(50.0f, 0.0f, 0.0f);
+		// Set MuzzleOffset to spawn projectiles where the camera is located.
+		MuzzleOffset.Set(0.0f, 0.0f, 0.0f);
 
 		// Transform MuzzleOffset from camera space to world space.
 		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
@@ -192,8 +192,8 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 				// Set the projectile's initial trajectory.
 				FVector LaunchDirection = MuzzleRotation.Vector();
 				Projectile->FireInDirection(LaunchDirection);
-				DevProjectileNextFireTime = GetWorld()->GetTimeSeconds() + DevProjectileFirerate;
 			}
+			DevProjectileNextFireTime = GetWorld()->GetTimeSeconds() + DevProjectileFirerate;
 		}
 	}
 }

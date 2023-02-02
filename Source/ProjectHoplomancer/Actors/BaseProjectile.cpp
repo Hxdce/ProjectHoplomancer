@@ -3,6 +3,8 @@
 
 #include "./BaseProjectile.h"
 
+#include "../PlayerCharacter/PlayerCharacter.h"
+
 // Sets default values
 ABaseProjectile::ABaseProjectile()
 {
@@ -11,7 +13,10 @@ ABaseProjectile::ABaseProjectile()
 
 	Collider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
 	Collider->InitSphereRadius(4.0f);
+	Collider->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
+
 	RootComponent = Collider;
+
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
 	MovementComponent->UpdatedComponent = Collider;
 	MovementComponent->InitialSpeed = 3000.0f;
@@ -27,8 +32,9 @@ void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Collider->OnComponentBeginOverlap.AddDynamic(this, &ABaseProjectile::OnHit);
+	Collider->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit);
 }
+
 
 // Called every frame
 void ABaseProjectile::Tick(float DeltaTime)
@@ -37,11 +43,27 @@ void ABaseProjectile::Tick(float DeltaTime)
 
 }
 
-void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
-{
 
+// Invoked when hitting something.
+void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherComponent->GetName());
+	if (OtherActor != this && OtherActor != this->GetOwner())
+	{
+		if (OtherComponent->IsSimulatingPhysics())
+		{
+			// Make impulse velocity independent for now...
+			FVector impulse = MovementComponent->Velocity;
+			impulse.Normalize();
+			impulse *= 100.0f;
+			OtherComponent->AddImpulseAtLocation(impulse, Hit.ImpactPoint);
+		}
+		Destroy();
+	}
 }
 
+
+// Fire the projectile in a given direction.
 void ABaseProjectile::FireInDirection(const FVector& ShootDirection)
 {
 	MovementComponent->Velocity = ShootDirection * MovementComponent->InitialSpeed;
