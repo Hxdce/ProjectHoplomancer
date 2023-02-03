@@ -18,14 +18,10 @@ APlayerCharacter::APlayerCharacter()
 	check(PlayerCamera != nullptr);
 	// Attach the camera component to our root component.
 	PlayerCamera->SetupAttachment(GetRootComponent());
-	// Position the camera slightly above the eyes.
+	// Position the camera above the eyes.
 	PlayerCamera->SetRelativeLocation(FVector(0.0f, 0.0f, BaseEyeHeight));
 	// Enable the pawn to control camera rotation.
 	PlayerCamera->bUsePawnControlRotation = true;
-
-	// Used for smooth crouching.
-	CrouchEyeOffset = FVector(0.0f);
-	CrouchSpeed = 12.0f;
 
 	// Dev variables.
 	DevProjectileFirerate = 0.25f;
@@ -97,58 +93,14 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 }
 
 
-// Start crouching...
+// Start & stop crouching, used for input bindings...
 void APlayerCharacter::StartCrouch(const FInputActionValue& Value)
 {
 	Crouch();
 }
-
-
-// Stop crouching...
 void APlayerCharacter::StopCrouch(const FInputActionValue& Value)
 {
 	UnCrouch();
-}
-
-
-// OnStartCrouch override.
-void APlayerCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
-{
-	if (HalfHeightAdjust == 0.0f)
-	{
-		return;
-	}
-
-	float StartBaseEyeHeight = BaseEyeHeight;
-	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
-	CrouchEyeOffset.Z += StartBaseEyeHeight - BaseEyeHeight + HalfHeightAdjust;
-	PlayerCamera->SetRelativeLocation(FVector(0.0f, 0.0f, BaseEyeHeight), false);
-}
-
-
-// OnEndCrouch override.
-void APlayerCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
-{
-	if (HalfHeightAdjust == 0.0f)
-	{
-		return;
-	}
-
-	float StartBaseEyeHeight = BaseEyeHeight;
-	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
-	CrouchEyeOffset.Z += StartBaseEyeHeight - BaseEyeHeight - HalfHeightAdjust;
-	PlayerCamera->SetRelativeLocation(FVector(0.0f, 0.0f, BaseEyeHeight), false);
-}
-
-
-// CalcCamera override.
-void APlayerCharacter::CalcCamera(float DeltaTime, struct FMinimalViewInfo& OutResult)
-{
-	if (PlayerCamera)
-	{
-		PlayerCamera->GetCameraView(DeltaTime, OutResult);
-		OutResult.Location += CrouchEyeOffset;
-	}
 }
 
 
@@ -209,7 +161,4 @@ void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	float CrouchInterpolationTime = FMath::Min(1.0f, CrouchSpeed * DeltaTime);
-	CrouchEyeOffset = (1.0f - CrouchInterpolationTime) * CrouchEyeOffset;
 }

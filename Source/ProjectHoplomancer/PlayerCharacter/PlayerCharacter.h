@@ -5,6 +5,7 @@
 // Header includes:
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -30,10 +31,6 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
-	void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
-	void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
-	void CalcCamera(float DeltaTime, struct FMinimalViewInfo& OutResult) override;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,6 +39,9 @@ protected:
 	// Player Controls.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Camera)
 	UCameraComponent* PlayerCamera;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* PlayerStaticMesh;
 
 	UPROPERTY(EditAnywhere, Category=Input)
 	UInputMappingContext* PlayerCharacterContext;
@@ -68,31 +68,26 @@ protected:
 	UInputAction* SecondaryAttackAction;
 
 
-	// Used for smooth crouching.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Crouch)
-	FVector CrouchEyeOffset;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Crouch)
-	float CrouchSpeed;
-
-
 	// Dev Projectile.
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class ABaseProjectile> DevProjectileClass;
 	// Dev Projectile Firerate.
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	double DevProjectileFirerate;
-
+	// Next time player can fire.
 	double DevProjectileNextFireTime;
 
 	// Gun muzzle offset from the camera location.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector MuzzleOffset;
 
+	UFUNCTION(BlueprintCallable, Category = Character)
+	void StartCrouch(const FInputActionValue& Value);
+	UFUNCTION(BlueprintCallable, Category = Character)
+	void StopCrouch(const FInputActionValue& Value);
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void StartCrouch(const FInputActionValue& Value);
-	void StopCrouch(const FInputActionValue& Value);
 	void PrimaryAttack(const FInputActionValue& Value);
 	void SecondaryAttack(const FInputActionValue& Value);
 
