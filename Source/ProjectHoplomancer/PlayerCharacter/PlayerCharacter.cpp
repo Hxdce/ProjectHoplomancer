@@ -58,8 +58,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump);
-		EnhancedInputComponent->BindAction(CrouchStartAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartCrouch);
-		EnhancedInputComponent->BindAction(CrouchStopAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StopCrouch);
 		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::PrimaryAttack);
 		EnhancedInputComponent->BindAction(SecondaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SecondaryAttack);
 	}
@@ -90,17 +88,6 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 	AddControllerPitchInput(LookAxisVector.Y);
 	AddControllerYawInput(LookAxisVector.X);
-}
-
-
-// Start & stop crouching, used for input bindings...
-void APlayerCharacter::StartCrouch(const FInputActionValue& Value)
-{
-	Crouch();
-}
-void APlayerCharacter::StopCrouch(const FInputActionValue& Value)
-{
-	UnCrouch();
 }
 
 

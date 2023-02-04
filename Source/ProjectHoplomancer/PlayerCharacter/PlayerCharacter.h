@@ -56,10 +56,7 @@ protected:
 	UInputAction* JumpAction;
 
 	UPROPERTY(EditAnywhere, Category=Input)
-	UInputAction* CrouchStartAction;
-
-	UPROPERTY(EditAnywhere, Category=Input)
-	UInputAction* CrouchStopAction;
+	UInputAction* CrouchAction;
 
 	UPROPERTY(EditAnywhere, Category=Input)
 	UInputAction* PrimaryAttackAction;
@@ -80,11 +77,6 @@ protected:
 	// Gun muzzle offset from the camera location.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector MuzzleOffset;
-
-	UFUNCTION(BlueprintCallable, Category = Character)
-	void StartCrouch(const FInputActionValue& Value);
-	UFUNCTION(BlueprintCallable, Category = Character)
-	void StopCrouch(const FInputActionValue& Value);
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
