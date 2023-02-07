@@ -12,6 +12,7 @@
 
 // Includes from project code:
 #include "../Actors/BaseProjectile.h"
+#include "../Actors/BaseWeapon.h"
 
 // This include always comes last:
 #include "PlayerCharacter.generated.h"
@@ -73,6 +74,11 @@ protected:
 	double DevProjectileFirerate;
 	// Next time player can fire.
 	double DevProjectileNextFireTime;
+	// Bool for controlling whether the dev gun is active.
+	bool DevUseDevGun;
+
+	// The current weapon the player is using (if any).
+	ABaseWeapon* CurrWeapon;
 
 	// Gun muzzle offset from the camera location.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)

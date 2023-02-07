@@ -25,6 +25,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// Dev variables.
 	DevProjectileFirerate = 0.25f;
+	DevUseDevGun = true;
 }
 
 
@@ -96,45 +97,48 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
 	// Dev code for testing firing projectiles.
 
-	// Can't fire faster than weapon firerate.
-	if (GetWorld()->GetTimeSeconds() < DevProjectileNextFireTime)
+	if (DevUseDevGun)
 	{
-		return;
-	}
-
-	if (DevProjectileClass)
-	{
-		// Get the camera transform.
-		FVector CameraLocation;
-		FRotator CameraRotation;
-		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-		FVector f = PlayerCamera->GetRelativeLocation();
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Camera: %f %f %f"), f.X, f.Y, f.Z));
-		// Set MuzzleOffset to spawn projectiles where the camera is located, accounting for offset when crouching.
-		MuzzleOffset.Set(0.0f, 0.0f, f.Z - BaseEyeHeight);
-
-		// Transform MuzzleOffset from camera space to world space.
-		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
-		// Get the camera rotation as the muzzle rotation.
-		FRotator MuzzleRotation = CameraRotation;
-
-
-		UWorld* World = GetWorld();
-		if (World)
+		// Can't fire faster than weapon firerate.
+		if (GetWorld()->GetTimeSeconds() < DevProjectileNextFireTime)
 		{
-			FActorSpawnParameters SP;
-			SP.Owner = this;
-			SP.Instigator = GetInstigator();
+			return;
+		}
 
-			ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(DevProjectileClass, MuzzleLocation, MuzzleRotation, SP);
-			if (Projectile)
+		if (DevProjectileClass)
+		{
+			// Get the camera transform.
+			FVector CameraLocation;
+			FRotator CameraRotation;
+			GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+			FVector f = PlayerCamera->GetRelativeLocation();
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Camera: %f %f %f"), f.X, f.Y, f.Z));
+			// Set MuzzleOffset to spawn projectiles where the camera is located, accounting for offset when crouching.
+			MuzzleOffset.Set(0.0f, 0.0f, f.Z - BaseEyeHeight);
+
+			// Transform MuzzleOffset from camera space to world space.
+			FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+			// Get the camera rotation as the muzzle rotation.
+			FRotator MuzzleRotation = CameraRotation;
+
+
+			UWorld* World = GetWorld();
+			if (World)
 			{
-				// Set the projectile's initial trajectory.
-				FVector LaunchDirection = MuzzleRotation.Vector();
-				Projectile->FireInDirection(LaunchDirection);
+				FActorSpawnParameters SP;
+				SP.Owner = this;
+				SP.Instigator = GetInstigator();
+
+				ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(DevProjectileClass, MuzzleLocation, MuzzleRotation, SP);
+				if (Projectile)
+				{
+					// Set the projectile's initial trajectory.
+					FVector LaunchDirection = MuzzleRotation.Vector();
+					Projectile->FireInDirection(LaunchDirection);
+				}
+				DevProjectileNextFireTime = GetWorld()->GetTimeSeconds() + DevProjectileFirerate;
 			}
-			DevProjectileNextFireTime = GetWorld()->GetTimeSeconds() + DevProjectileFirerate;
 		}
 	}
 }
