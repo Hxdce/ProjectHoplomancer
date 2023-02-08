@@ -55,7 +55,7 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 			// Make impulse velocity independent for now...
 			FVector impulse = MovementComponent->Velocity;
 			impulse.Normalize();
-			impulse *= 100.0f;
+			impulse *= 20000.0f;
 			OtherComponent->AddImpulseAtLocation(impulse, Hit.ImpactPoint);
 		}
 		Destroy();
