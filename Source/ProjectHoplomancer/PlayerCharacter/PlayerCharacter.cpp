@@ -108,11 +108,9 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 }
 
 
-// Primary attack!
-void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
+// For calculating where projectiles originate from and what direction they should face.
+void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation)
 {
-
-	// Point of aim stuff. Probably gonna move this into a separate function shortly!
 	FVector CameraLocation;
 	FRotator CameraRotation;
 	GetActorEyesViewPoint(CameraLocation, CameraRotation);
@@ -123,12 +121,22 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 	MuzzleOffset.Set(0.0f, 0.0f, f.Z - BaseEyeHeight);
 
 	// Transform MuzzleOffset from camera space to world space.
-	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+	*OutMuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+
 	// Get the camera rotation as the muzzle rotation.
-	FRotator MuzzleRotation = CameraRotation;
+	*OutMuzzleRotation = CameraRotation;
+}
+
+// Primary attack!
+void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
+{
+
+	// Point of aim stuff.
+	FVector MuzzleLocation;
+	FRotator MuzzleRotation;
+	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
 
 	// Dev code for testing firing projectiles.
-
 	if (DevUseDevGun)
 	{
 		// Can't fire faster than weapon firerate.

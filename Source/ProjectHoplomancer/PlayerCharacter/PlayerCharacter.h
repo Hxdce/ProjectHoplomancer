@@ -87,10 +87,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector MuzzleOffset;
 
+
+	// Proprietary Functions:
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void PrimaryAttack(const FInputActionValue& Value);
 	void SecondaryAttack(const FInputActionValue& Value);
+	void CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation);
 
 public:	
 	// Called every frame.
