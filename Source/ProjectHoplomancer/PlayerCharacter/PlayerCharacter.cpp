@@ -25,7 +25,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// Dev variables.
 	DevProjectileFirerate = 0.25f;
-	DevUseDevGun = true;
+	DevUseDevGun = false;
 }
 
 
@@ -63,6 +63,22 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(SecondaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SecondaryAttack);
 	}
 
+}
+
+
+// Function to handle picking up a weapon.
+bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
+{
+	CurrWeapon = wpn;
+	if (CurrWeapon == nullptr)
+	{
+		// Operation failed somehow.
+		return false;
+	}
+	CurrWeapon->SetActorEnableCollision(false);
+	CurrWeapon->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+	CurrWeapon->SetThirdPersonMeshVisibility(false);
+	return true;
 }
 
 
@@ -140,6 +156,12 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 				DevProjectileNextFireTime = GetWorld()->GetTimeSeconds() + DevProjectileFirerate;
 			}
 		}
+	}
+	else if (CurrWeapon != nullptr)
+	{
+		//FString out = FString::Printf(TEXT("Attempting primary attack with %s!"), *CurrWeapon->GetClass()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
+		CurrWeapon->PrimaryAttack();
 	}
 }
 

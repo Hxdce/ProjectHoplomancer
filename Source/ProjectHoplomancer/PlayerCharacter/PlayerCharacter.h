@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// The player character.
 
 #pragma once
 
@@ -41,7 +41,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Camera)
 	UCameraComponent* PlayerCamera;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category=Mesh)
 	UStaticMeshComponent* PlayerStaticMesh;
 
 	UPROPERTY(EditAnywhere, Category=Input)
@@ -80,6 +80,9 @@ protected:
 	// The current weapon the player is using (if any).
 	ABaseWeapon* CurrWeapon;
 
+	// Weapons the player is carrying.
+	TArray<ABaseWeapon*> Weapons;
+
 	// Gun muzzle offset from the camera location.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector MuzzleOffset;
@@ -90,10 +93,12 @@ protected:
 	void SecondaryAttack(const FInputActionValue& Value);
 
 public:	
-	// Called every frame
+	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
+	// Called to bind functionality to input.
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Function to handle picking up a weapon.
+	virtual bool TakeWeapon(ABaseWeapon* wpn);
 };
