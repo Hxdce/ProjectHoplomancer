@@ -19,6 +19,7 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ABaseWeapon BeginPlay!"));
 }
 
 // Called every frame.
@@ -46,12 +47,12 @@ void ABaseWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
 }
 
 
-void ABaseWeapon::PrimaryAttack()
+void ABaseWeapon::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 }
 
 
-void ABaseWeapon::SecondaryAttack()
+void ABaseWeapon::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 }
 

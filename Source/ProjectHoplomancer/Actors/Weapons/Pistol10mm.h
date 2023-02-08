@@ -20,9 +20,9 @@ public:
 	// Sets default values for this actor's properties
 	APistol10mm();
 
-	virtual void PrimaryAttack() override;
+	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
 
-	virtual void SecondaryAttack() override;
+	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
 
 protected:
 

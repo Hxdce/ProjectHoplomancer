@@ -111,6 +111,22 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 // Primary attack!
 void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
+
+	// Point of aim stuff. Probably gonna move this into a separate function shortly!
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+	FVector f = PlayerCamera->GetRelativeLocation();
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Camera: %f %f %f"), f.X, f.Y, f.Z));
+	// Set MuzzleOffset to spawn projectiles where the camera is located, accounting for offset when crouching.
+	MuzzleOffset.Set(0.0f, 0.0f, f.Z - BaseEyeHeight);
+
+	// Transform MuzzleOffset from camera space to world space.
+	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+	// Get the camera rotation as the muzzle rotation.
+	FRotator MuzzleRotation = CameraRotation;
+
 	// Dev code for testing firing projectiles.
 
 	if (DevUseDevGun)
@@ -123,22 +139,6 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 
 		if (DevProjectileClass)
 		{
-			// Get the camera transform.
-			FVector CameraLocation;
-			FRotator CameraRotation;
-			GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-			FVector f = PlayerCamera->GetRelativeLocation();
-			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Camera: %f %f %f"), f.X, f.Y, f.Z));
-			// Set MuzzleOffset to spawn projectiles where the camera is located, accounting for offset when crouching.
-			MuzzleOffset.Set(0.0f, 0.0f, f.Z - BaseEyeHeight);
-
-			// Transform MuzzleOffset from camera space to world space.
-			FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
-			// Get the camera rotation as the muzzle rotation.
-			FRotator MuzzleRotation = CameraRotation;
-
-
 			UWorld* World = GetWorld();
 			if (World)
 			{
@@ -161,7 +161,7 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 	{
 		//FString out = FString::Printf(TEXT("Attempting primary attack with %s!"), *CurrWeapon->GetClass()->GetName());
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
-		CurrWeapon->PrimaryAttack();
+		CurrWeapon->PrimaryAttack(this, MuzzleLocation, MuzzleRotation);
 	}
 }
 

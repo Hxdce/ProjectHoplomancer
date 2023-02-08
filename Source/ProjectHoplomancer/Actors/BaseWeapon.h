@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+// Includes from project code:
+#include "./BaseProjectile.h"
+
 // This include always comes last:
 #include "BaseWeapon.generated.h"
 
@@ -23,8 +26,8 @@ public:
 
 	// Proprietary functions:
 
-	virtual void PrimaryAttack();
-	virtual void SecondaryAttack();
+	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
+	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
 
 	virtual float GetNextFireTime();
 	virtual void SetNextFireTime(double time);

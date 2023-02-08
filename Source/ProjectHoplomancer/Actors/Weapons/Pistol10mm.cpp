@@ -29,7 +29,7 @@ void APistol10mm::Tick(float DeltaTime)
 
 
 // Primary attack!
-void APistol10mm::PrimaryAttack()
+void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Invoking 10mm pistol primary attack!"));
 	// Can't fire faster than weapon firerate.
@@ -43,6 +43,6 @@ void APistol10mm::PrimaryAttack()
 
 
 // Secondary attack!
-void APistol10mm::SecondaryAttack()
+void APistol10mm::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 }

@@ -2,7 +2,6 @@
 
 
 #include "./BaseProjectile.h"
-
 #include "../PlayerCharacter/PlayerCharacter.h"
 
 // Sets default values
