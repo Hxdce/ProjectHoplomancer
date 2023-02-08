@@ -31,14 +31,42 @@ void APistol10mm::Tick(float DeltaTime)
 // Primary attack!
 void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Invoking 10mm pistol primary attack!"));
-	// Can't fire faster than weapon firerate.
-	if (GetWorld()->GetTimeSeconds() < NextFireTime)
+	UWorld* World = GetWorld();
+	// Basic check for valid world + can't fire faster than weapon firerate.
+	if (!Parent || !World || World->GetTimeSeconds() < NextFireTime)
 	{
 		return;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
-	NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Invoking 10mm pistol primary attack!"));
+
+
+	if (WeaponProjectile)
+	{		
+		FActorSpawnParameters SP;
+		SP.Owner = Parent;
+		if (SP.Owner != nullptr)
+		{
+			SP.Instigator = SP.Owner->GetInstigator();
+		}
+
+
+		ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleRotation, SP);
+		if (Projectile)
+		{
+			// Set up projectile properties here? (Might be better to make this its own separate function, or distinct ammo type classes!)
+			Projectile->MovementComponent->InitialSpeed = 10000.0f;
+			Projectile->MovementComponent->MaxSpeed = 10000.0f;
+
+			// Set the projectile's initial trajectory.
+			FVector LaunchDirection = MuzzleRotation.Vector();
+			Projectile->FireInDirection(LaunchDirection);
+		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
+		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
+	}
+
+
 }
 
 
