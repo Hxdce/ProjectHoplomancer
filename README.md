@@ -5,6 +5,10 @@ Built using [Unreal Engine 5](https://www.unrealengine.com/en-US/unreal-engine-5
 
 © Hxdce, 2023  
 
+## Credits
+
+Tino Meinert / Liquitype for creating the font "CP Mono".
+
 ## License
 
 This work is licensed under the
