@@ -58,11 +58,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Variable for the weapon's fire rate.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=WeaponStats)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float Firerate;
 
 	// Variable for the weapon's max ammo reservoir (e.g. magazine, cylinder, hopper) capacity.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=WeaponStats)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	int ReservoirMax;
 
 	// Variable for the weapon's current ammo count.

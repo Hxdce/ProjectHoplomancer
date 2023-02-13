@@ -190,6 +190,10 @@ void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 
 void APlayerCharacter::ReloadWeapon(const FInputActionValue& Value)
 {
+	if (CurrWeapon != nullptr)
+	{
+		CurrWeapon->ReloadWeapon(false);
+	}
 }
 
 

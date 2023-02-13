@@ -11,12 +11,13 @@ ABaseWeapon::ABaseWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
+	// Set up collider.
 	PickupCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
 	PickupCollider->InitSphereRadius(100.0f);
 	PickupCollider->BodyInstance.SetCollisionProfileName(TEXT("Trigger"));
 	SetRootComponent(PickupCollider);
 
+	// Set up third person mesh.
 	ThirdPersonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ThirdPersonMesh"));
 	ThirdPersonMesh->SetupAttachment(GetRootComponent());
 }
@@ -92,6 +93,10 @@ bool ABaseWeapon::GetThirdPersonMeshVisibility()
 
 void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 {
-	ReservoirCurrRoundCount = ReservoirMax;
+	if (ReservoirCurrRoundCount < ReservoirMax)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
+		ReservoirCurrRoundCount = ReservoirMax;
+	}
 }
 

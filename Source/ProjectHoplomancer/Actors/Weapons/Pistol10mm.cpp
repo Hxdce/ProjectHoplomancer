@@ -11,6 +11,10 @@ APistol10mm::APistol10mm()
 	PrimaryActorTick.bCanEverTick = true;
 	NextFireTime = -99.0f;
 	Firerate = 0.25f;
+
+	// Fill the reservoir to its max.
+	ReservoirMax = 12;
+	ReservoirCurrRoundCount = ReservoirMax;
 }
 
 // Called when the game starts or when spawned.
@@ -38,7 +42,13 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 		return;
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Invoking 10mm pistol primary attack!"));
-
+	if (ReservoirCurrRoundCount <= 0)
+	{
+		// Should dry fire here, then reload if we have ammo.
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Weapon is empty! Click!"));
+		NextFireTime = GetWorld()->GetTimeSeconds() + 0.5f;
+		return;
+	}
 
 	if (WeaponProjectile)
 	{		
@@ -64,6 +74,7 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
 		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
+		ReservoirCurrRoundCount--;
 	}
 
 
