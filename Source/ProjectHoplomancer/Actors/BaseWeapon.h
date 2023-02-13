@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SphereComponent.h"
 
 // Includes from project code:
 #include "./BaseProjectile.h"
@@ -42,6 +43,10 @@ protected:
 	// Mesh for model.
 	UPROPERTY(EditAnywhere, Category=Mesh)
 	UStaticMeshComponent* ThirdPersonMesh;
+
+	// Collider for pickup detection.
+	UPROPERTY(VisibleDefaultsOnly, Category=Collision)
+	class USphereComponent* PickupCollider;
 
 	// Next time this weapon can fire.
 	double NextFireTime;

@@ -11,8 +11,16 @@ ABaseWeapon::ABaseWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+
+	PickupCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
+	PickupCollider->InitSphereRadius(100.0f);
+	PickupCollider->BodyInstance.SetCollisionProfileName(TEXT("Trigger"));
+	SetRootComponent(PickupCollider);
+
 	ThirdPersonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ThirdPersonMesh"));
+	ThirdPersonMesh->SetupAttachment(GetRootComponent());
 }
+
 
 // Called when the game starts or when spawned.
 void ABaseWeapon::BeginPlay()
@@ -21,6 +29,7 @@ void ABaseWeapon::BeginPlay()
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ABaseWeapon BeginPlay!"));
 }
+
 
 // Called every frame.
 void ABaseWeapon::Tick(float DeltaTime)
@@ -68,10 +77,12 @@ void ABaseWeapon::SetNextFireTime(double time)
 	NextFireTime = time;
 }
 
+
 void ABaseWeapon::SetThirdPersonMeshVisibility(bool vis)
 {
 	ThirdPersonMesh->SetVisibility(vis);
 }
+
 
 bool ABaseWeapon::GetThirdPersonMeshVisibility()
 {
