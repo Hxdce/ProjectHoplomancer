@@ -188,6 +188,10 @@ void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 	}
 }
 
+void APlayerCharacter::ReloadWeapon(const FInputActionValue& Value)
+{
+}
+
 
 // Called every frame.
 void APlayerCharacter::Tick(float DeltaTime)
