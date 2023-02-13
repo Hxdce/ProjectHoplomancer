@@ -72,20 +72,26 @@ float ABaseWeapon::GetNextFireTime()
 }
 
 
-void ABaseWeapon::SetNextFireTime(double time)
+void ABaseWeapon::SetNextFireTime(double Time)
 {
-	NextFireTime = time;
+	NextFireTime = Time;
 }
 
 
-void ABaseWeapon::SetThirdPersonMeshVisibility(bool vis)
+void ABaseWeapon::SetThirdPersonMeshVisibility(bool Vis)
 {
-	ThirdPersonMesh->SetVisibility(vis);
+	ThirdPersonMesh->SetVisibility(Vis);
 }
 
 
 bool ABaseWeapon::GetThirdPersonMeshVisibility()
 {
 	return ThirdPersonMesh->IsVisible();
+}
+
+
+void ABaseWeapon::ReloadWeapon(bool EmptyReload)
+{
+	ReservoirCurrRoundCount = ReservoirMax;
 }
 

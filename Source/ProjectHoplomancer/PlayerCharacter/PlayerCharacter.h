@@ -65,6 +65,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category=Input)
 	UInputAction* SecondaryAttackAction;
 
+	UPROPERTY(EditAnywhere, Category=Input)
+	UInputAction* ReloadAction;
 
 	// Dev Projectile.
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
@@ -94,6 +96,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void PrimaryAttack(const FInputActionValue& Value);
 	void SecondaryAttack(const FInputActionValue& Value);
+	void ReloadWeapon(const FInputActionValue& Value);
 	void CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation);
 
 public:	

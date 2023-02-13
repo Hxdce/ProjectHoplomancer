@@ -31,10 +31,12 @@ public:
 	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
 
 	virtual float GetNextFireTime();
-	virtual void SetNextFireTime(double time);
+	virtual void SetNextFireTime(double Time);
 
-	virtual void SetThirdPersonMeshVisibility(bool vis);
+	virtual void SetThirdPersonMeshVisibility(bool Vis);
 	virtual bool GetThirdPersonMeshVisibility();
+
+	virtual void ReloadWeapon(bool EmptyReload=false);
 
 protected:
 	// Called when the game starts or when spawned.
@@ -55,8 +57,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Variables for the weapon fire rate.
+	// Variable for the weapon's fire rate.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=WeaponStats)
 	float Firerate;
 
+	// Variable for the weapon's max ammo reservoir (e.g. magazine, cylinder, hopper) capacity.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=WeaponStats)
+	int ReservoirMax;
+
+	// Variable for the weapon's current ammo count.
+	int ReservoirCurrRoundCount;
 };
