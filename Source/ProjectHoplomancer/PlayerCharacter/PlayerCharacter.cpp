@@ -23,6 +23,8 @@ APlayerCharacter::APlayerCharacter()
 	// Enable the pawn to control camera rotation.
 	PlayerCamera->bUsePawnControlRotation = true;
 
+	GetMesh()->SetOwnerNoSee(true);
+
 	// Dev variables.
 	DevProjectileFirerate = 0.25f;
 	DevUseDevGun = false;
