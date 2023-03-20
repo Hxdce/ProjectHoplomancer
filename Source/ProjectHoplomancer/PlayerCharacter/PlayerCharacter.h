@@ -79,9 +79,6 @@ protected:
 	// Bool for controlling whether the dev gun is active.
 	bool DevUseDevGun;
 
-	// The current weapon the player is using (if any).
-	ABaseWeapon* CurrWeapon;
-
 	// Weapons the player is carrying.
 	TArray<ABaseWeapon*> Weapons;
 
@@ -99,7 +96,11 @@ protected:
 	void ReloadWeapon(const FInputActionValue& Value);
 	void CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation);
 
-public:	
+public:
+	// The current weapon the player is using (if any).
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	ABaseWeapon* CurrWeapon;
+
 	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
