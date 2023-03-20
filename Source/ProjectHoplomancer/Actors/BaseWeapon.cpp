@@ -20,6 +20,11 @@ ABaseWeapon::ABaseWeapon()
 	// Set up third person mesh.
 	ThirdPersonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ThirdPersonMesh"));
 	ThirdPersonMesh->SetupAttachment(GetRootComponent());
+
+	// Default value for PrintName.
+	PrintName = "Base Weapon";
+	// IMPORTANT: If a derived child class prints the name "Base Weapon", it needs to have its Print Name value overriden
+	// in its respective blueprint!!!
 }
 
 

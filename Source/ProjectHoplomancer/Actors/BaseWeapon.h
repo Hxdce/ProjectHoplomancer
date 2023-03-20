@@ -68,4 +68,8 @@ public:
 	// Variable for the weapon's current ammo count.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = WeaponStats)
 	int ReservoirCurrRoundCount;
+
+	// Variable for the weapon's printed name on UIs and such.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	FString PrintName;
 };
