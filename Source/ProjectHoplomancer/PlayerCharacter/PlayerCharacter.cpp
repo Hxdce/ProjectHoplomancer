@@ -182,10 +182,10 @@ void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 {
 	if (CurrWeapon != nullptr)
 	{
-	// Point of aim stuff.
-	FVector MuzzleLocation;
-	FRotator MuzzleRotation;
-	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
+		// Point of aim stuff.
+		FVector MuzzleLocation;
+		FRotator MuzzleRotation;
+		CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
 		CurrWeapon->SecondaryAttack(this, MuzzleLocation, MuzzleRotation);
 	}
 }
