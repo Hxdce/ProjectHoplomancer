@@ -32,6 +32,7 @@ void ABaseProjectile::BeginPlay()
 	Super::BeginPlay();
 	
 	Collider->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit);
+	Collider->OnComponentBeginOverlap.AddDynamic(this, &ABaseProjectile::OnOverlapBegin);
 }
 
 
@@ -57,6 +58,26 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 			impulse *= 20000.0f;
 			OtherComponent->AddImpulseAtLocation(impulse, Hit.ImpactPoint);
 		}
+		Destroy();
+	}
+}
+
+
+// Invoked when overlapping something.
+void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
+	
+	if (p == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherComponent->GetName());
+	}
+	else
+	{
+		return;
+	}
+	if (OtherActor != this && OtherActor != this->GetOwner())
+	{
 		Destroy();
 	}
 }
