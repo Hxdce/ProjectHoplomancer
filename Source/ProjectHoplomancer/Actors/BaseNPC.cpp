@@ -8,8 +8,11 @@ ABaseNPC::ABaseNPC()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	MaxHealth = 100;
+	CurrentHealth = MaxHealth;
+	IsAlive = true;
 }
+
 
 // Called when the game starts or when spawned
 void ABaseNPC::BeginPlay()
@@ -18,6 +21,7 @@ void ABaseNPC::BeginPlay()
 	
 }
 
+
 // Called every frame
 void ABaseNPC::Tick(float DeltaTime)
 {
@@ -25,10 +29,65 @@ void ABaseNPC::Tick(float DeltaTime)
 
 }
 
+
 // Called to bind functionality to input
 void ABaseNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ABaseNPC::DeathCleanup()
+{
+	Destroy();
+}
+
+
+void ABaseNPC::InflictDamage(int damageAmount)
+{
+	if (damageAmount >= CurrentHealth)
+	{
+		Die();
+	}
+	else
+	{
+		CurrentHealth -= damageAmount;
+	}
+}
+
+
+void ABaseNPC::Heal(int healAmount)
+{
+	CurrentHealth = FGenericPlatformMath::Min(CurrentHealth + healAmount, MaxHealth);
+}
+
+
+void ABaseNPC::Die()
+{
+	if (IsAlive)
+	{
+		USkeletalMeshComponent* NPCMesh = GetMesh();
+		UCapsuleComponent* NPCCapsuleComponent = GetCapsuleComponent();
+		AController* NPCController = GetController<AController>();
+
+		NPCCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		NPCMesh->bPauseAnims = true;
+		NPCMesh->SetSimulatePhysics(true);
+		if (NPCController != nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("NPCController is valid, destroying."));
+			NPCController->StopMovement();
+			NPCController->UnPossess();
+			NPCController->Destroy();
+		}
+		if (CurrentHealth > 0)
+		{
+			CurrentHealth = 0;
+		}
+		IsAlive = false;
+
+		FTimerHandle handle;
+		GetWorld()->GetTimerManager().SetTimer(handle, this, &ABaseNPC::DeathCleanup, 3.0f, false);
+	}
 }
 

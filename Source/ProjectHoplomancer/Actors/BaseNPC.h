@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GenericPlatform/GenericPlatformMath.h"
+#include "Components/CapsuleComponent.h"
+#include "AIController.h"
+#include "TimerManager.h"
+
 #include "BaseNPC.generated.h"
 
 UCLASS()
@@ -19,6 +24,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	float DeathCleanupTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int CurrentHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		int MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		bool IsAlive;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -26,4 +41,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Used for deleting the remains of an NPC after death, e.g. its ragdoll or static death pose.
+	void DeathCleanup();
+
+	UFUNCTION(BlueprintCallable)
+	void InflictDamage(int damageAmount);
+
+	UFUNCTION(BlueprintCallable)
+	void Heal(int healAmount);
+
+	UFUNCTION(BlueprintCallable)
+	void Die();
 };

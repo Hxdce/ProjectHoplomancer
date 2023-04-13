@@ -3,6 +3,7 @@
 
 #include "./BaseProjectile.h"
 #include "../PlayerCharacter/PlayerCharacter.h"
+#include "./BaseNPC.h"
 
 // Sets default values
 ABaseProjectile::ABaseProjectile()
@@ -78,6 +79,11 @@ void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 	}
 	if (OtherActor != this && OtherActor != this->GetOwner())
 	{
+		ABaseNPC* npc = Cast<ABaseNPC>(OtherActor);
+		if (npc != nullptr)
+		{
+			npc->InflictDamage(DamageValue);
+		}
 		Destroy();
 	}
 }
