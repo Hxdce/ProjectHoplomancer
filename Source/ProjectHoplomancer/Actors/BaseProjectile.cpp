@@ -24,6 +24,7 @@ ABaseProjectile::ABaseProjectile()
 	MovementComponent->bRotationFollowsVelocity = true;
 	MovementComponent->ProjectileGravityScale = 0.0f;
 
+	DamageValue = 1;
 	InitialLifeSpan = 5.0f;
 }
 

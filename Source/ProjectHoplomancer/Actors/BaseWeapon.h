@@ -57,16 +57,28 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Variable for the damage of the primary fire mode.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	int DamagePrimary;
+
+	// Variable for the damage of the secondary fire mode.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	int DamageSecondary;
+
 	// Variable for the weapon's fire rate.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float Firerate;
+
+	// Variable for the projectile velocity of the weapon.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float ProjectileVelocity;
 
 	// Variable for the weapon's max ammo reservoir (e.g. magazine, cylinder, hopper) capacity.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	int ReservoirMax;
 
 	// Variable for the weapon's current ammo count.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = WeaponStats)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=WeaponStats)
 	int ReservoirCurrRoundCount;
 
 	// Variable for the weapon's printed name on UIs and such.

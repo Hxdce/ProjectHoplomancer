@@ -37,7 +37,7 @@ public:
 
 	// Damage value.
 	UPROPERTY(EditAnywhere)
-	float DamageValue = 8.0f;
+	int DamageValue;
 
 	// Function to invoke when hitting something.
 	UFUNCTION()
