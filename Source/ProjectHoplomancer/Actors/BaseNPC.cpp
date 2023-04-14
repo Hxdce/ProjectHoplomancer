@@ -37,22 +37,24 @@ void ABaseNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void ABaseNPC::DeathCleanup()
-{
-	Destroy();
-}
 
-
-void ABaseNPC::InflictDamage(int damageAmount)
+float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (damageAmount >= CurrentHealth)
+	float res = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	CurrentHealth -= DamageAmount;
+	if (CurrentHealth <= 0)
 	{
 		Die();
 	}
-	else
-	{
-		CurrentHealth -= damageAmount;
-	}
+
+	return res;
+}
+
+
+void ABaseNPC::DeathCleanup()
+{
+	Destroy();
 }
 
 

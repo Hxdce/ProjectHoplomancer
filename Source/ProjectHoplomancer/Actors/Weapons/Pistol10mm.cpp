@@ -12,7 +12,7 @@ APistol10mm::APistol10mm()
 	NextFireTime = -99.0f;
 
 	// Default values for weapon stats:
-	DamagePrimary = 15;
+	DamagePrimary = 15.0f;
 	Firerate = 0.25f;
 
 	// Fill the reservoir to its max.
@@ -67,6 +67,7 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 		if (Projectile)
 		{
 			// Set up projectile properties here? (Might be better to make this its own separate function, or distinct ammo type classes!)
+			Projectile->ProjectileFirer = SP.Owner->GetInstigatorController();
 			Projectile->MovementComponent->InitialSpeed = ProjectileVelocity;
 			Projectile->MovementComponent->MaxSpeed = ProjectileVelocity;
 			Projectile->DamageValue = DamagePrimary;

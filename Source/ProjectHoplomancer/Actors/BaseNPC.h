@@ -41,11 +41,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Built-in function for taking damage.
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	// Used for deleting the remains of an NPC after death, e.g. its ragdoll or static death pose.
 	void DeathCleanup();
-
-	UFUNCTION(BlueprintCallable)
-	void InflictDamage(int damageAmount);
 
 	UFUNCTION(BlueprintCallable)
 	void Heal(int healAmount);

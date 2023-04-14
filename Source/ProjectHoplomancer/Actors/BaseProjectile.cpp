@@ -3,6 +3,8 @@
 
 #include "./BaseProjectile.h"
 #include "../PlayerCharacter/PlayerCharacter.h"
+#include "Engine/DamageEvents.h"
+
 #include "./BaseNPC.h"
 
 // Sets default values
@@ -24,7 +26,7 @@ ABaseProjectile::ABaseProjectile()
 	MovementComponent->bRotationFollowsVelocity = true;
 	MovementComponent->ProjectileGravityScale = 0.0f;
 
-	DamageValue = 1;
+	DamageValue = 1.0f;
 	InitialLifeSpan = 5.0f;
 }
 
@@ -83,7 +85,10 @@ void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 		ABaseNPC* npc = Cast<ABaseNPC>(OtherActor);
 		if (npc != nullptr)
 		{
-			npc->InflictDamage(DamageValue);
+			//npc->InflictDamage(DamageValue);
+			// UDamageType::StaticClass();
+			TSubclassOf<UDamageType> damageType = UDamageType::StaticClass();
+			npc->TakeDamage(DamageValue, FDamageEvent(damageType), ProjectileFirer, this);
 		}
 		Destroy();
 	}

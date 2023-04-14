@@ -59,11 +59,11 @@ public:
 
 	// Variable for the damage of the primary fire mode.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
-	int DamagePrimary;
+	float DamagePrimary;
 
 	// Variable for the damage of the secondary fire mode.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
-	int DamageSecondary;
+	float DamageSecondary;
 
 	// Variable for the weapon's fire rate.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)

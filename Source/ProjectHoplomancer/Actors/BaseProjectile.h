@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameFramework/DamageType.h"
 
 // This include always comes last:
 #include "BaseProjectile.generated.h"
@@ -35,9 +36,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	class UProjectileMovementComponent* MovementComponent;
 
+	// Actor that gets credit for firing this projectile.
+	UPROPERTY()
+	TObjectPtr<class AController> ProjectileFirer;
+
 	// Damage value.
 	UPROPERTY(EditAnywhere)
-	int DamageValue;
+	float DamageValue;
 
 	// Function to invoke when hitting something.
 	UFUNCTION()
