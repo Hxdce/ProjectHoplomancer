@@ -12,6 +12,10 @@
 // This include always comes last:
 #include "BaseWeapon.generated.h"
 
+
+// Custom delegate signatures:
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEventWeaponFire, class AActor*, Instigator, FVector, Location)
+
 UCLASS()
 class PROJECTHOPLOMANCER_API ABaseWeapon : public AActor
 {
@@ -84,4 +88,10 @@ public:
 	// Variable for the weapon's printed name on UIs and such.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	FString PrintName;
+
+	// Delegates:
+
+	// Event when firing.
+	UPROPERTY(BlueprintAssignable, Category="EventDispatchers")
+	FEventWeaponFire WeaponOnFire;
 };
