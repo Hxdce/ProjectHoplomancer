@@ -16,6 +16,7 @@
 // Custom delegate signatures:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEventWeaponFire, class AActor*, Instigator, FVector, Location)
 
+
 UCLASS()
 class PROJECTHOPLOMANCER_API ABaseWeapon : public AActor
 {

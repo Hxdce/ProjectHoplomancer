@@ -28,6 +28,10 @@ APlayerCharacter::APlayerCharacter()
 	// Dev variables.
 	DevProjectileFirerate = 0.25f;
 	DevUseDevGun = false;
+
+	MaxHealth = 100;
+	CurrentHealth = MaxHealth;
+	IsAlive = true;
 }
 
 
@@ -69,11 +73,31 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 
+// Built-in function override for taking damage.
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (!IsAlive)
+	{
+		return 0.0f;
+	}
+	
+	float res = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	CurrentHealth -= DamageAmount;
+	if (CurrentHealth <= 0)
+	{
+		Die();
+	}
+
+	return res;
+}
+
+
 // Function to handle picking up a weapon.
 bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 {
 	CurrWeapon = wpn;
-	if (CurrWeapon == nullptr)
+	if (!IsAlive || CurrWeapon == nullptr)
 	{
 		// Operation failed somehow.
 		return false;
@@ -85,9 +109,44 @@ bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 }
 
 
+void APlayerCharacter::Heal(int healAmount)
+{
+	if (IsAlive)
+	{
+		CurrentHealth = FGenericPlatformMath::Min(CurrentHealth + healAmount, MaxHealth);
+	}
+}
+
+
+void APlayerCharacter::Die()
+{
+	if (IsAlive)
+	{
+		IsAlive = false;
+		if (CurrentHealth > 0)
+		{
+			CurrentHealth = 0;
+		}
+
+		//UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+		//MovementComponent->SetMovementMode(MOVE_None);
+		//GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 4);
+		// Probably just control the camera from blueprints for now!
+
+		// Triggers the On Player Death event in blueprints:
+		PlayerDeath();
+	}
+}
+
+
 // The main player movement function.
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {	
+	if (!IsAlive)
+	{
+		return;
+	}
+
 	// Directional character movement. Reacts according to the camera's rotation.
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -133,6 +192,10 @@ void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRo
 // Primary attack!
 void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
+	if (!IsAlive)
+	{
+		return;
+	}
 
 	// Point of aim stuff.
 	FVector MuzzleLocation;
@@ -180,6 +243,11 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 // Secondary attack!
 void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 {
+	if (!IsAlive)
+	{
+		return;
+	}
+
 	if (CurrWeapon != nullptr)
 	{
 		// Point of aim stuff.
@@ -192,6 +260,11 @@ void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 
 void APlayerCharacter::ReloadWeapon(const FInputActionValue& Value)
 {
+	if (!IsAlive)
+	{
+		return;
+	}
+
 	if (CurrWeapon != nullptr)
 	{
 		CurrWeapon->ReloadWeapon(false);

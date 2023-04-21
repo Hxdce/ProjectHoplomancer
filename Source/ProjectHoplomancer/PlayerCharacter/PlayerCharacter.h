@@ -9,6 +9,8 @@
 #include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GenericPlatform/GenericPlatformMath.h"
+#include "TimerManager.h"
 
 // Includes from project code:
 #include "../Actors/BaseProjectile.h"
@@ -21,6 +23,10 @@
 // Forward declarations:
 class UInputMappingContext;
 class UInputAction;
+
+
+// Custom delegate signatures:
+// Nothing here yet...
 
 
 UCLASS()
@@ -86,6 +92,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector MuzzleOffset;
 
+	// Current health.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	int CurrentHealth;
+
+	// Maximum health.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	int MaxHealth;
 
 	// Proprietary Functions:
 
@@ -101,12 +114,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	ABaseWeapon* CurrWeapon;
 
+	// Character is alive?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	bool IsAlive;
+
 	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input.
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Built-in function override for taking damage.
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	// Proprietary functions below:
+
 	// Function to handle picking up a weapon.
 	virtual bool TakeWeapon(ABaseWeapon* wpn);
+
+	UFUNCTION(BlueprintCallable)
+	void Heal(int healAmount);
+
+	UFUNCTION(BlueprintCallable)
+	void Die();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayerDeath();
 };
