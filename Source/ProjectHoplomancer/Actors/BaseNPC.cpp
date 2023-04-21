@@ -40,10 +40,15 @@ void ABaseNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (!IsAlive)
+	{
+		return 0.0f;
+	}
+	
 	float res = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	CurrentHealth -= DamageAmount;
-	if (CurrentHealth <= 0)
+	if (CurrentHealth <= 0 && IsAlive)
 	{
 		Die();
 	}

@@ -26,14 +26,17 @@ protected:
 
 	float DeathCleanupTime;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int CurrentHealth;
+	// Current health.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	int CurrentHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		int MaxHealth;
+	// Maximum health.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	int MaxHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		bool IsAlive;
+	// Character is alive?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	bool IsAlive;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -41,8 +44,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// Built-in function for taking damage.
+	// Built-in function override for taking damage.
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	// Proprietary functions below:
 
 	// Used for deleting the remains of an NPC after death, e.g. its ragdoll or static death pose.
 	void DeathCleanup();
