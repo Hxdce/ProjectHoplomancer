@@ -189,10 +189,11 @@ void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRo
 	*OutMuzzleRotation = CameraRotation;
 }
 
+
 // Primary attack!
 void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
-	if (!IsAlive)
+	if (!IsAlive || CurrWeapon == nullptr)
 	{
 		return;
 	}
@@ -231,7 +232,7 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 			}
 		}
 	}
-	else if (CurrWeapon != nullptr)
+	else
 	{
 		//FString out = FString::Printf(TEXT("Attempting primary attack with %s!"), *CurrWeapon->GetClass()->GetName());
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
@@ -243,20 +244,18 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 // Secondary attack!
 void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 {
-	if (!IsAlive)
+	if (!IsAlive || CurrWeapon == nullptr)
 	{
 		return;
 	}
 
-	if (CurrWeapon != nullptr)
-	{
-		// Point of aim stuff.
-		FVector MuzzleLocation;
-		FRotator MuzzleRotation;
-		CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
-		CurrWeapon->SecondaryAttack(this, MuzzleLocation, MuzzleRotation);
-	}
+	// Point of aim stuff.
+	FVector MuzzleLocation;
+	FRotator MuzzleRotation;
+	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
+	CurrWeapon->SecondaryAttack(this, MuzzleLocation, MuzzleRotation);
 }
+
 
 void APlayerCharacter::ReloadWeapon(const FInputActionValue& Value)
 {
