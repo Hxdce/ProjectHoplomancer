@@ -78,13 +78,6 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 
 			WeaponOnFire.Broadcast(Parent, MuzzleLocation);
 
-			if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
-			{
-				GameMode->AddToPlayerScore(10);
-			}
-			else {
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("AProjectHoplomancerGameModeBase cast failed!!!"));
-			}
 		}
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));

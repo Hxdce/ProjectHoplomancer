@@ -8,7 +8,12 @@
 #include "Components/CapsuleComponent.h"
 #include "AIController.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
+// Includes from project code:
+#include "../ProjectHoplomancerGameModeBase.h"
+
+// This include always comes last:
 #include "BaseNPC.generated.h"
 
 UCLASS()
@@ -47,6 +52,10 @@ public:
 
 	// Built-in function override for taking damage.
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	// Amount of points to give the player on death.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	int PlayerScorePointsValue;
 
 	// Proprietary functions below:
 

@@ -8,9 +8,12 @@ ABaseNPC::ABaseNPC()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Some default values for NPCs.
 	MaxHealth = 100;
 	CurrentHealth = MaxHealth;
 	IsAlive = true;
+	PlayerScorePointsValue = 100;
 }
 
 
@@ -50,6 +53,22 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	CurrentHealth -= DamageAmount;
 	if (CurrentHealth <= 0 && IsAlive)
 	{
+		FString out = FString::Printf(TEXT("NPC death causer is %s!"), *EventInstigator->GetPawn()->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
+
+		ACharacter* inst = Cast<ACharacter>(EventInstigator->GetPawn());
+
+		if (inst == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)) {
+			// Only change the score if the event instigator for this NPC's death was the player.
+			if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
+			{
+				GameMode->AddToPlayerScore(PlayerScorePointsValue);
+			}
+			else {
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("AProjectHoplomancerGameModeBase cast failed in BaseNPC!!!"));
+			}
+		}
+
 		Die();
 	}
 
@@ -60,6 +79,7 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 void ABaseNPC::PrimaryAttack()
 {
 }
+
 
 void ABaseNPC::DeathCleanup()
 {
