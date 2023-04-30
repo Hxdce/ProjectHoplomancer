@@ -16,4 +16,17 @@ class PROJECTHOPLOMANCER_API AProjectHoplomancerGameModeBase : public AGameModeB
 	GENERATED_BODY()
 	
 	virtual void StartPlay() override;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	int GetPlayerScore();
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerScore(int n);
+
+	UFUNCTION(BlueprintCallable)
+	void AddToPlayerScore(int n);
+
+protected:
+	int PlayerScore;
 };

@@ -15,6 +15,7 @@
 // Includes from project code:
 #include "../Actors/BaseProjectile.h"
 #include "../Actors/BaseWeapon.h"
+#include "../ProjectHoplomancerGameModeBase.h"
 
 // This include always comes last:
 #include "PlayerCharacter.generated.h"

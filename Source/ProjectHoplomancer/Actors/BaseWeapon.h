@@ -8,6 +8,7 @@
 
 // Includes from project code:
 #include "./BaseProjectile.h"
+#include "../ProjectHoplomancerGameModeBase.h"
 
 // This include always comes last:
 #include "BaseWeapon.generated.h"
