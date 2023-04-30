@@ -57,6 +57,10 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 }
 
 
+void ABaseNPC::PrimaryAttack()
+{
+}
+
 void ABaseNPC::DeathCleanup()
 {
 	Destroy();

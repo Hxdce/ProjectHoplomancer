@@ -37,6 +37,7 @@ protected:
 	// Character is alive?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	bool IsAlive;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -49,6 +50,9 @@ public:
 
 	// Proprietary functions below:
 
+	UFUNCTION(BlueprintCallable)
+	void PrimaryAttack();
+
 	// Used for deleting the remains of an NPC after death, e.g. its ragdoll or static death pose.
 	void DeathCleanup();
 
@@ -57,4 +61,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Die();
+
 };
