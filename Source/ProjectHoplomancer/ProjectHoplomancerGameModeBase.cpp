@@ -14,8 +14,6 @@ void AProjectHoplomancerGameModeBase::StartPlay()
 		// The -1 "Key" value argument prevents the message from being updated or refreshed.
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hello World, this is ProjectHoplomancerGameModeBase!"));
 	}
-
-	PlayerScore = 0;
 }
 
 int AProjectHoplomancerGameModeBase::GetPlayerScore()

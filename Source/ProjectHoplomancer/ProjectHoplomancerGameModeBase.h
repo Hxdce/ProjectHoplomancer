@@ -34,5 +34,5 @@ public:
 	float CorpseRagdollCleanupTime = 5.0f;
 
 protected:
-	int PlayerScore;
+	int PlayerScore = 0;
 };
