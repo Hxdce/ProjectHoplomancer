@@ -117,8 +117,13 @@ void ABaseNPC::Die()
 		}
 		IsAlive = false;
 
+		float cleanupTime = 5.0f;
+		if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
+		{
+			cleanupTime = GameMode->CorpseRagdollCleanupTime;
+		}
 		FTimerHandle handle;
-		GetWorld()->GetTimerManager().SetTimer(handle, this, &ABaseNPC::DeathCleanup, 3.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(handle, this, &ABaseNPC::DeathCleanup, cleanupTime, false);
 	}
 }
 

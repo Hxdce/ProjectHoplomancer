@@ -27,6 +27,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddToPlayerScore(int n);
 
+	// Default values for variables have to be assigned in
+	// the header since gamemodes don't use a constructor.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Performance)
+	float CorpseRagdollCleanupTime = 5.0f;
+
 protected:
 	int PlayerScore;
 };
