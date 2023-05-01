@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "../BaseNPC.h"
+
+// This include always comes last:
 #include "NPCSwarmer.generated.h"
 
 /**
