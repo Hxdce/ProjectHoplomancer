@@ -53,23 +53,7 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	CurrentHealth -= DamageAmount;
 	if (CurrentHealth <= 0 && IsAlive)
 	{
-		FString out = FString::Printf(TEXT("NPC death causer is %s!"), *EventInstigator->GetPawn()->GetName());
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
-
-		ACharacter* inst = Cast<ACharacter>(EventInstigator->GetPawn());
-
-		if (inst == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)) {
-			// Only change the score if the event instigator for this NPC's death was the player.
-			if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
-			{
-				GameMode->AddToPlayerScore(PlayerScorePointsValue);
-			}
-			else {
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("AProjectHoplomancerGameModeBase cast failed in BaseNPC!!!"));
-			}
-		}
-
-		Die();
+		Die(EventInstigator, DamageCauser, DamageAmount);
 	}
 
 	return res;
@@ -93,10 +77,26 @@ void ABaseNPC::Heal(int healAmount)
 }
 
 
-void ABaseNPC::Die()
+void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float DamageAmount)
 {
 	if (IsAlive)
 	{
+		if (EventInstigator != nullptr) {
+			FString out = FString::Printf(TEXT("NPC death causer is %s!"), *EventInstigator->GetPawn()->GetName());
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
+			ACharacter* inst = Cast<ACharacter>(EventInstigator->GetPawn());
+			if (inst == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)) {
+				// Only change the score if the event instigator for this NPC's death was the player.
+				if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
+				{
+					GameMode->AddToPlayerScore(PlayerScorePointsValue);
+				}
+				else {
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("AProjectHoplomancerGameModeBase cast failed in BaseNPC!!!"));
+				}
+			}
+		}
+		
 		USkeletalMeshComponent* NPCMesh = GetMesh();
 		UCapsuleComponent* NPCCapsuleComponent = GetCapsuleComponent();
 		AController* NPCController = GetController<AController>();
@@ -104,6 +104,16 @@ void ABaseNPC::Die()
 		NPCCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		NPCMesh->bPauseAnims = true;
 		NPCMesh->SetSimulatePhysics(true);
+
+		// Add physics impuse to the corpse, if applicable.
+		if (DamageCauser != nullptr) {
+			FVector impulse = DamageCauser->GetVelocity();
+			impulse.Normalize();
+			impulse *= DamageAmount * 1000.0f;
+			NPCMesh->AddImpulseAtLocation(impulse, DamageCauser->GetActorLocation());
+		}
+
+		// Destroy the NPC controller.
 		if (NPCController != nullptr)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("NPCController is valid, destroying."));
@@ -117,6 +127,7 @@ void ABaseNPC::Die()
 		}
 		IsAlive = false;
 
+		// Ragdoll cleanup time set up.
 		float cleanupTime = 5.0f;
 		if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
 		{

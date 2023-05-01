@@ -69,6 +69,6 @@ public:
 	void Heal(int healAmount);
 
 	UFUNCTION(BlueprintCallable)
-	void Die();
+	void Die(AController* EventInstigator=nullptr, AActor* DamageCauser=nullptr, float DamageAmount=0.0f);
 
 };
