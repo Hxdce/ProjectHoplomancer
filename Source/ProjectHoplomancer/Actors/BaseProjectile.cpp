@@ -56,10 +56,16 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 	{
 		if (OtherComponent->IsSimulatingPhysics())
 		{
-			// Make impulse velocity independent for now...
+			float impulseMult = 1.0f;
+			AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode());
+			if (GameMode != nullptr)
+			{
+				impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
+			}
+
 			FVector impulse = MovementComponent->Velocity;
 			impulse.Normalize();
-			impulse *= 20000.0f;
+			impulse *= DamageValue * 1000.0f * impulseMult;
 			OtherComponent->AddImpulseAtLocation(impulse, Hit.ImpactPoint);
 		}
 		Destroy();

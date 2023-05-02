@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Performance)
 	float CorpseRagdollCleanupTime = 5.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	float ProjectilePhysicsImpulseMultiplier = 1.0f;
+
 protected:
 	int PlayerScore = 0;
 };

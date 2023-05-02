@@ -81,13 +81,15 @@ void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float Dam
 {
 	if (IsAlive)
 	{
+		AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode());
+
 		if (EventInstigator != nullptr) {
 			FString out = FString::Printf(TEXT("NPC death causer is %s!"), *EventInstigator->GetPawn()->GetName());
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
 			ACharacter* inst = Cast<ACharacter>(EventInstigator->GetPawn());
 			if (inst == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)) {
 				// Only change the score if the event instigator for this NPC's death was the player.
-				if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
+				if (GameMode != nullptr)
 				{
 					GameMode->AddToPlayerScore(PlayerScorePointsValue);
 				}
@@ -107,9 +109,13 @@ void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float Dam
 
 		// Add physics impuse to the corpse, if applicable.
 		if (DamageCauser != nullptr) {
+			float impulseMult = 1.0f;
+			if (GameMode != nullptr) {
+				impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
+			}
 			FVector impulse = DamageCauser->GetVelocity();
 			impulse.Normalize();
-			impulse *= DamageAmount * 1000.0f;
+			impulse *= DamageAmount * 1000.0f * impulseMult;
 			NPCMesh->AddImpulseAtLocation(impulse, DamageCauser->GetActorLocation());
 		}
 
@@ -129,7 +135,7 @@ void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float Dam
 
 		// Ragdoll cleanup time set up.
 		float cleanupTime = 5.0f;
-		if (AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode()))
+		if (GameMode != nullptr)
 		{
 			cleanupTime = GameMode->CorpseRagdollCleanupTime;
 		}
