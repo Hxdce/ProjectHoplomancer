@@ -3,6 +3,8 @@
 
 #include "./BaseNPC.h"
 
+#include "Engine/DamageEvents.h"
+
 // Sets default values
 ABaseNPC::ABaseNPC()
 {
@@ -14,6 +16,9 @@ ABaseNPC::ABaseNPC()
 	CurrentHealth = MaxHealth;
 	IsAlive = true;
 	PlayerScorePointsValue = 100;
+	LastAttackTime = -99.0f;
+	AttackPrimaryCooldownTime = 0.5f;
+	AttackPrimaryRange = 200.0f;  // Two meters.
 }
 
 
@@ -62,6 +67,45 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 void ABaseNPC::PrimaryAttack()
 {
+	if (GetWorld()->GetTimeSeconds() >= LastAttackTime + AttackPrimaryCooldownTime) {
+		// GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "NPC is primary attacking!");
+		LastAttackTime = GetWorld()->GetTimeSeconds();
+
+		// Set what actors to seek out from its collision channel
+		TArray<TEnumAsByte<EObjectTypeQuery>> traceObjectTypes;
+		traceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
+
+		// Actors to ignore...
+		TArray<AActor*> ignoredActors;
+		// Ignore ourselves.
+		ignoredActors.Init(this, 1);
+
+		// Array for actors that are inside the radius of the sphere.
+		TArray<AActor*> overlappedActors;
+
+		// Total radius of the sphere:
+		float r = AttackPrimaryRange;
+		FVector location = GetActorLocation();
+
+		UClass* seekClass = APlayerCharacter::StaticClass();
+		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), location, r, traceObjectTypes, seekClass, ignoredActors, overlappedActors);
+
+		DrawDebugSphere(GetWorld(), GetActorLocation(), r, 12, FColor::Red, false, 3.0f);
+
+		if (overlappedActors.Num() == 0) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Sphere trace didn't hit anything!");
+		}
+
+		for (AActor* a : overlappedActors) {
+			FString n = FString::Printf(TEXT("NPC hit %s!"), *a->GetName());
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, n);
+			APlayerCharacter* p = Cast<APlayerCharacter>(a);
+			if (p != nullptr) {
+				TSubclassOf<UDamageType> damageType = UDamageType::StaticClass();
+				p->TakeDamage(10.0f, FDamageEvent(damageType), GetController(), this);
+			}
+		}
+	}
 }
 
 

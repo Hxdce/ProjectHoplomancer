@@ -9,9 +9,12 @@
 #include "AIController.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/DamageType.h"
 
 // Includes from project code:
 #include "../ProjectHoplomancerGameModeBase.h"
+#include "../PlayerCharacter/PlayerCharacter.h"
 
 // This include always comes last:
 #include "BaseNPC.generated.h"
@@ -29,7 +32,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	float DeathCleanupTime;
+	double LastAttackTime;
+	double DeathCleanupTime;
 
 	// Current health.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -56,6 +60,14 @@ public:
 	// Amount of points to give the player on death.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	int PlayerScorePointsValue;
+
+	// Primary attack cooldown time.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	double AttackPrimaryCooldownTime;
+
+	// Primary attack range.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	double AttackPrimaryRange;
 
 	// Proprietary functions below:
 
