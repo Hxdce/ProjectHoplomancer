@@ -27,7 +27,7 @@ class UInputAction;
 
 
 // Custom delegate signatures:
-// Nothing here yet...
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathSignature)
 
 
 UCLASS()
@@ -112,7 +112,7 @@ protected:
 
 public:
 	// The current weapon the player is using (if any).
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	ABaseWeapon* CurrWeapon;
 
 	// Character is alive?
@@ -139,6 +139,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Die();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	// Player death event, for using in the PLAYER'S EVENT GRAPH.
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="Player Death"))
 	void PlayerDeath();
+
+	// On Player death delegate, for binding to OTHER THINGS.
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="EventDispatchers")
+	FPlayerDeathSignature OnPlayerDeath;
 };

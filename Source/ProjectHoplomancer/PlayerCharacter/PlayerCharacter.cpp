@@ -134,8 +134,11 @@ void APlayerCharacter::Die()
 		//GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 4);
 		// Probably just control the camera from blueprints for now!
 
-		// Triggers the On Player Death event in blueprints:
+		// Triggers the Player Death event for usage in the player's event graph:
 		PlayerDeath();
+
+		// Broadcasts the OnPlayerDeath delegate for usage with any other actors binded to it.
+		OnPlayerDeath.Broadcast();
 	}
 }
 
