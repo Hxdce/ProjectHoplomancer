@@ -135,7 +135,7 @@ void APlayerCharacter::Die()
 		// Probably just control the camera from blueprints for now!
 
 		// Triggers the Player Death event for usage in the player's event graph:
-		PlayerDeath();
+		ReceivePlayerDeath();
 
 		// Broadcasts the OnPlayerDeath delegate for usage with any other actors binded to it.
 		OnPlayerDeath.Broadcast();

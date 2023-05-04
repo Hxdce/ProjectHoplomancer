@@ -139,9 +139,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Die();
 
+
+	// Events:
+
 	// Player death event, for using in the PLAYER'S EVENT GRAPH.
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="Player Death"))
-	void PlayerDeath();
+	void ReceivePlayerDeath();
+
+	// Delegates:
 
 	// On Player death delegate, for binding to OTHER THINGS.
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="EventDispatchers")
