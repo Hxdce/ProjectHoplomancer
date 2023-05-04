@@ -64,6 +64,8 @@ void ABaseWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ABaseWeapon::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
+	ReceiveWeaponFire(Parent, MuzzleLocation);
+	OnWeaponFire.Broadcast(Parent, MuzzleLocation);
 }
 
 

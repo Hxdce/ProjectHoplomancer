@@ -15,7 +15,7 @@
 
 
 // Custom delegate signatures:
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEventWeaponFire, class AActor*, Instigator, FVector, Location)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponFireSignature, class AActor*, Instigator, FVector, Location)
 
 
 UCLASS()
@@ -91,9 +91,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	FString PrintName;
 
+
+	// Events:
+
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="Weapon Fire"))
+	void ReceiveWeaponFire(AActor* WeaponParent, FVector Location);
+
 	// Delegates:
 
-	// Event when firing.
-	UPROPERTY(BlueprintAssignable, Category="EventDispatchers")
-	FEventWeaponFire WeaponOnFire;
+	// Delegate when firing.
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="EventDispatchers")
+	FWeaponFireSignature OnWeaponFire;
 };

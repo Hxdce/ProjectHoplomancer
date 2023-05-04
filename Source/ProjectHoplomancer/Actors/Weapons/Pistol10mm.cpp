@@ -76,7 +76,8 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Projectile->FireInDirection(LaunchDirection);
 
-			WeaponOnFire.Broadcast(Parent, MuzzleLocation);
+			ReceiveWeaponFire(Parent, MuzzleLocation);
+			OnWeaponFire.Broadcast(Parent, MuzzleLocation);
 
 		}
 
