@@ -94,6 +94,17 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 }
 
 
+// Function for adding a physics impulse to the player, e.g. being pushed by explosions.
+void APlayerCharacter::AddPhysicsImpulse(FVector ImpulseOrigin, float magnitude)
+{
+	FVector impulse = GetActorLocation() - ImpulseOrigin;
+	impulse.Normalize();
+	impulse *= magnitude;
+	//GetMovementComponent()->Velocity = impulse;
+	LaunchCharacter(impulse, false, false);
+}
+
+
 // Function to handle picking up a weapon.
 bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 {

@@ -18,7 +18,9 @@ ABaseNPC::ABaseNPC()
 	PlayerScorePointsValue = 100;
 	LastAttackTime = -99.0f;
 	AttackPrimaryCooldownTime = 0.5f;
-	AttackPrimaryRange = 200.0f;  // Two meters.
+	AttackPrimaryDamage = 10.0f;
+	AttackPrimaryRange = 100.0f;  // One meter.
+	AttackPhysicsImpulse = 800.0f;
 }
 
 
@@ -102,7 +104,10 @@ void ABaseNPC::PrimaryAttack()
 			APlayerCharacter* p = Cast<APlayerCharacter>(a);
 			if (p != nullptr) {
 				TSubclassOf<UDamageType> damageType = UDamageType::StaticClass();
-				p->TakeDamage(10.0f, FDamageEvent(damageType), GetController(), this);
+				p->TakeDamage(AttackPrimaryDamage, FDamageEvent(damageType), GetController(), this);
+				FVector pos = GetActorLocation();
+				pos.Z = p->GetActorLocation().Z - 10.0f;  // Impulse should always be angled just slightly upward...
+				p->AddPhysicsImpulse(pos, AttackPhysicsImpulse);
 			}
 		}
 	}

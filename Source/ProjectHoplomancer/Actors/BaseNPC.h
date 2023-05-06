@@ -65,9 +65,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	double AttackPrimaryCooldownTime;
 
+	// Primary attack damage.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	float AttackPrimaryDamage;
+
 	// Primary attack range.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	double AttackPrimaryRange;
+	float AttackPrimaryRange;
+
+	// Primary attack physics impulse.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	float AttackPhysicsImpulse;
 
 	// Proprietary functions below:
 

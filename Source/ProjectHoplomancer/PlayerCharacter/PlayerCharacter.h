@@ -26,6 +26,10 @@ class UInputMappingContext;
 class UInputAction;
 
 
+// Note to self: It might be better to refactor APlayerCharacter and ABaseNPC at some point so
+// they inherit from the same class! Some of their member functions & variables can be shared.
+
+
 // Custom delegate signatures:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathSignature)
 
@@ -129,6 +133,10 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	// Proprietary functions below:
+
+	// Function for adding a physics impulse to the player, e.g. being pushed by explosions.
+	UFUNCTION(BlueprintCallable)
+	void AddPhysicsImpulse(FVector ImpulseOrigin, float magnitude);
 
 	// Function to handle picking up a weapon.
 	virtual bool TakeWeapon(ABaseWeapon* wpn);
