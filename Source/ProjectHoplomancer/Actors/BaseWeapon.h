@@ -42,6 +42,9 @@ protected:
 	// Next time this weapon can fire.
 	double NextFireTime;
 
+	// Variable for the weapon's current ammo count.
+	int ReservoirCurrRoundCount;
+
 	// Character wielding the weapon.
 	ACharacter* Wielder;
 
@@ -110,10 +113,6 @@ public:
 	// Variable for the weapon's max ammo reservoir (e.g. magazine, cylinder, hopper) capacity.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	int ReservoirMax;
-
-	// Variable for the weapon's current ammo count.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=WeaponStats)
-	int ReservoirCurrRoundCount;
 
 	// Variable for the weapon's printed name on UIs and such.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
