@@ -147,3 +147,15 @@ void ABaseWeapon::ApplyRecoil()
 		player->CameraApplyRecoil(FRotator(pitch, yaw, roll), RecoilSnappiness);
 	}
 }
+
+
+int ABaseWeapon::GetCurrentRoundCount()
+{
+	return ReservoirCurrRoundCount;
+}
+
+
+void ABaseWeapon::SetCurrentRoundCount(int count)
+{
+	ReservoirCurrRoundCount = count;
+}

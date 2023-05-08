@@ -119,6 +119,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	FString PrintName;
 
+	// Getter for the current ammo count.
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentRoundCount();
+	// Setter for the current ammo count.
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentRoundCount(int count);
 
 	// Events:
 
