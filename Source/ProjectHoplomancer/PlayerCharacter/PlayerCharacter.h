@@ -47,13 +47,21 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// ---
+	// Components:
 
-	// Player Controls.
+	// Player's camera.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Camera)
 	UCameraComponent* PlayerCamera;
-
+	// Player's mesh.
 	UPROPERTY(EditAnywhere, Category=Mesh)
 	UStaticMeshComponent* PlayerStaticMesh;
+
+	// ---------
+	
+	
+	// ---
+	// Stuff for player controls:
 
 	UPROPERTY(EditAnywhere, Category=Input)
 	UInputMappingContext* PlayerCharacterContext;
@@ -78,6 +86,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category=Input)
 	UInputAction* ReloadAction;
+	
+	// ---------
+	
+
+	// ---
+	// Dev gun stuff:
 
 	// Dev Projectile.
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
@@ -89,6 +103,26 @@ protected:
 	double DevProjectileNextFireTime;
 	// Bool for controlling whether the dev gun is active.
 	bool DevUseDevGun;
+	
+	// ---------
+	
+
+	// ---
+	// Camera recoil stuff:
+
+	// Camera rotation modification for recoil.
+	FRotator CameraRotMod;
+	// Camera rotation modification for recoil on the previous frame.
+	FRotator CameraRotModLastFrame;
+	// Camera recoil velocity. Resets to zero over time.
+	FRotator CameraRecoilVelocity;
+	
+	double CameraRotMaxPitchChange = 0;
+
+	// ---------
+	
+	// ---
+	// Other:
 
 	// Weapons the player is carrying.
 	TArray<ABaseWeapon*> Weapons;
@@ -113,6 +147,7 @@ protected:
 	void SecondaryAttack(const FInputActionValue& Value);
 	void ReloadWeapon(const FInputActionValue& Value);
 	void CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation);
+	void DecayCameraRecoilRotation(float DeltaTime);
 
 public:
 	// The current weapon the player is using (if any).
@@ -122,6 +157,13 @@ public:
 	// Character is alive?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	bool IsAlive;
+
+	// Higher values increase the amount of damping with camera recoil.
+	UPROPERTY(EditAnywhere, Category=Camera)
+	double CameraRecoilDamping;
+	// Higher values increases the speed at which the recoil decays.
+	UPROPERTY(EditAnywhere, Category=Camera)
+	double CameraRecoilSpringMagnitude;
 
 	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
@@ -147,6 +189,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Die();
 
+	// Function for applying camera recoil effects.
+	void CameraApplyRecoil(FRotator RecoilRotator, double Snappiness=0.0);
 
 	// Events:
 

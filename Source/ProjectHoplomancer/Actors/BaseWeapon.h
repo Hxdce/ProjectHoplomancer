@@ -27,23 +27,6 @@ public:
 	// Sets default values for this actor's properties.
 	ABaseWeapon();
 
-	// Overriden functions:
-
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
-	// Proprietary functions:
-
-	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
-	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
-
-	virtual float GetNextFireTime();
-	virtual void SetNextFireTime(double Time);
-
-	virtual void SetThirdPersonMeshVisibility(bool Vis);
-	virtual bool GetThirdPersonMeshVisibility();
-
-	virtual void ReloadWeapon(bool EmptyReload=false);
-
 protected:
 	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
@@ -59,9 +42,34 @@ protected:
 	// Next time this weapon can fire.
 	double NextFireTime;
 
+	// Character wielding the weapon.
+	ACharacter* Wielder;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Overriden functions:
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	// Proprietary functions:
+
+	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
+	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
+
+	virtual float GetNextFireTime();
+	virtual void SetNextFireTime(double Time);
+
+	virtual bool GetThirdPersonMeshVisibility();
+	virtual void SetThirdPersonMeshVisibility(bool Vis);
+
+	virtual ACharacter* GetWielder();
+	virtual void SetWielder(ACharacter* NewWielder);
+
+	virtual void ReloadWeapon(bool EmptyReload = false);
+
+	virtual void ApplyRecoil();
 
 	// Variable for the damage of the primary fire mode.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
@@ -78,6 +86,26 @@ public:
 	// Variable for the projectile velocity of the weapon.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float ProjectileVelocity;
+
+	// Variable for the minimum vertical recoil of the weapon.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float RecoilPitchMin;
+
+	// Variable for the maximum vertical recoil of the weapon.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float RecoilPitchMax;
+
+	// Variable for the minimum horizontal recoil of the weapon.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float RecoilYawMin;
+
+	// Variable for the maximum horizontal recoil of the weapon.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float RecoilYawMax;
+
+	// Variable for how snappy the weapon's recoil is.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float RecoilSnappiness;
 
 	// Variable for the weapon's max ammo reservoir (e.g. magazine, cylinder, hopper) capacity.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)

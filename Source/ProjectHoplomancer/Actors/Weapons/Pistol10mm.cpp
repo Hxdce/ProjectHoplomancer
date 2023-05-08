@@ -18,6 +18,7 @@ APistol10mm::APistol10mm()
 	// Fill the reservoir to its max.
 	ReservoirMax = 12;
 	ReservoirCurrRoundCount = ReservoirMax;
+	RecoilSnappiness = 0.0;
 }
 
 // Called when the game starts or when spawned.
@@ -75,6 +76,8 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			// Set the projectile's initial trajectory.
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Projectile->FireInDirection(LaunchDirection);
+
+			ApplyRecoil();
 
 			ReceiveWeaponFire(Parent, MuzzleLocation);
 			OnWeaponFire.Broadcast(Parent, MuzzleLocation);

@@ -86,15 +86,28 @@ void ABaseWeapon::SetNextFireTime(double Time)
 }
 
 
+
+bool ABaseWeapon::GetThirdPersonMeshVisibility()
+{
+	return ThirdPersonMesh->IsVisible();
+}
+
+
 void ABaseWeapon::SetThirdPersonMeshVisibility(bool Vis)
 {
 	ThirdPersonMesh->SetVisibility(Vis);
 }
 
 
-bool ABaseWeapon::GetThirdPersonMeshVisibility()
+ACharacter* ABaseWeapon::GetWielder()
 {
-	return ThirdPersonMesh->IsVisible();
+	return Wielder;
+}
+
+
+void ABaseWeapon::SetWielder(ACharacter* NewWielder)
+{
+	Wielder = NewWielder;
 }
 
 
@@ -107,3 +120,17 @@ void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 	}
 }
 
+
+void ABaseWeapon::ApplyRecoil()
+{
+	if (Wielder == nullptr) {
+		return;
+	}
+	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
+	if (player != nullptr) {
+		double pitch = FMath::RandRange(RecoilPitchMin, RecoilPitchMax);
+		double yaw = FMath::RandRange(RecoilYawMin, RecoilYawMax);
+		double roll = -yaw / 2.0;
+		player->CameraApplyRecoil(FRotator(pitch, yaw, roll), RecoilSnappiness);
+	}
+}

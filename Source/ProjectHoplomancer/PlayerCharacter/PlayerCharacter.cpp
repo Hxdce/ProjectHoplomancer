@@ -33,6 +33,13 @@ APlayerCharacter::APlayerCharacter()
 	MaxHealth = 100;
 	CurrentHealth = MaxHealth;
 	IsAlive = true;
+
+	// Camera recoil stuff.
+	CameraRotMod = FRotator(0.0, 0.0, 0.0);
+	CameraRotModLastFrame = FRotator(0.0, 0.0, 0.0);
+	CameraRecoilVelocity = FRotator(0.0, 0.0, 0.0);
+	CameraRecoilDamping = 9.0;
+	CameraRecoilSpringMagnitude = 65.0;
 }
 
 
@@ -53,6 +60,29 @@ void APlayerCharacter::BeginPlay()
 	// Display a debug message for five seconds. 
 	// The -1 "Key" value argument prevents the message from being updated or refreshed.
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Using PlayerCharacter class."));
+}
+
+
+// Called every frame.
+void APlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, FString::Printf(TEXT("CameraRotMod.Pitch: %f\nCameraRotMod.Yaw: %f\nCameraRotMod.Roll: %f"), CameraRotMod.Pitch, CameraRotMod.Yaw, CameraRotMod.Roll));
+	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, FString::Printf(TEXT("CameraRotMaxPitchChange: %f"), CameraRotMaxPitchChange));
+
+	DecayCameraRecoilRotation(DeltaTime);
+
+	APlayerController* pc = GetLocalViewingPlayerController();
+	if (pc != nullptr) {
+		if (CameraRotMod.Pitch > CameraRotMaxPitchChange) {
+			CameraRotMaxPitchChange = CameraRotMod.Pitch;
+		}
+		// Subtract the previous frame's rotation alteration so we don't stack.
+		pc->RotationInput += CameraRotMod - CameraRotModLastFrame;
+		// Store for the next frame.
+		CameraRotModLastFrame = CameraRotMod;
+	}
 }
 
 
@@ -117,6 +147,7 @@ bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 	CurrWeapon->SetActorEnableCollision(false);
 	CurrWeapon->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 	CurrWeapon->SetThirdPersonMeshVisibility(false);
+	CurrWeapon->SetWielder(this);
 	return true;
 }
 
@@ -151,6 +182,13 @@ void APlayerCharacter::Die()
 		// Broadcasts the OnPlayerDeath delegate for usage with any other actors binded to it.
 		OnPlayerDeath.Broadcast();
 	}
+}
+
+void APlayerCharacter::CameraApplyRecoil(FRotator RecoilRotator, double Snappiness)
+{
+	Snappiness = FMath::Clamp(Snappiness, 0.0, 1.0);
+	CameraRotMod += RecoilRotator * Snappiness;
+	CameraRecoilVelocity += RecoilRotator * 20.0 * (1.0 - Snappiness);
 }
 
 
@@ -203,6 +241,37 @@ void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRo
 	// Get the camera rotation as the muzzle rotation.
 	*OutMuzzleRotation = CameraRotation;
 }
+
+
+// Handle and decay any camera recoiling effects e.g. from weapon recoil, injury, landing from falls, etc.
+void APlayerCharacter::DecayCameraRecoilRotation(float DeltaTime)
+{
+	if (!CameraRotMod.IsNearlyZero(0.001) || !CameraRecoilVelocity.IsNearlyZero(0.001)) {
+		CameraRotMod += CameraRecoilVelocity * DeltaTime;
+
+		double damping = FMath::Max(1.0 - (CameraRecoilDamping * DeltaTime), 0.0);  // Don't go below zero.
+		CameraRecoilVelocity *= damping;
+
+		double springForceMagnitude = CameraRecoilSpringMagnitude * DeltaTime;
+		springForceMagnitude = FMath::Clamp(springForceMagnitude, 0.0, 2.0);
+		CameraRecoilVelocity -= CameraRotMod * springForceMagnitude;
+
+		// Clamp the value range so it doesn't wrap around and cause weirdness.
+		CameraRotMod = FRotator(
+			FMath::Clamp(CameraRotMod.Pitch, -89.0, 89.0),
+			FMath::Clamp(CameraRotMod.Yaw, -179.0, 179.0),
+			FMath::Clamp(CameraRotMod.Roll, -89.0, 89.0)
+		);
+	}
+	else {
+		CameraRotMod = FRotator(0.0, 0.0, 0.0);
+		CameraRecoilVelocity = FRotator(0.0, 0.0, 0.0);
+	}
+}
+// Credits to Valve Software - this system is heavily based off of how the camera recoil effects
+// work in the Source engine for games such as Half-Life 2 and Counter Strike: Source.
+// https://www.valvesoftware.com/en/
+// https://github.com/ValveSoftware/source-sdk-2013/blob/master/sp/src/game/shared/gamemovement.cpp#L1213
 
 
 // Primary attack!
@@ -283,11 +352,4 @@ void APlayerCharacter::ReloadWeapon(const FInputActionValue& Value)
 	{
 		CurrWeapon->ReloadWeapon(false);
 	}
-}
-
-
-// Called every frame.
-void APlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
