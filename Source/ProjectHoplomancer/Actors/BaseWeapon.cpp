@@ -25,6 +25,19 @@ ABaseWeapon::ABaseWeapon()
 	PrintName = "Base Weapon";
 	// IMPORTANT: If a derived child class prints the name "Base Weapon", it needs to have its Print Name value overriden
 	// in its respective blueprint!!!
+
+	// Default values for weapon sats.
+	DamagePrimary = 10;
+	DamageSecondary = 10;
+	Firerate = 0.5;
+	ProjectileVelocity = 5000;
+	RecoilPitchMin = 0.0;
+	RecoilPitchMax = 0.0;
+	RecoilYawMin = 0.0;
+	RecoilYawMax = 0.0;
+	RecoilSnappiness = 0.0;
+	ReservoirMax = 8;
+	ReservoirCurrRoundCount = ReservoirMax;
 }
 
 
