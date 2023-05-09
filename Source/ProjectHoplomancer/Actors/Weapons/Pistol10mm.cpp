@@ -12,13 +12,17 @@ APistol10mm::APistol10mm()
 	NextFireTime = -99.0f;
 
 	// Default values for weapon stats:
-	DamagePrimary = 15.0f;
-	Firerate = 0.25f;
-
-	// Fill the reservoir to its max.
+	PrintName = "10mm Pistol";
+	DamagePrimary = 20.0f;
+	Firerate = 0.33333f;
+	ProjectileVelocity = 10000.0f;
+	RecoilPitchMin = 1.5f;
+	RecoilPitchMax = 2.0f;
+	RecoilYawMin = -0.5f;
+	RecoilYawMax = 0.5f;
+	RecoilSnappiness = 0.5f;
 	ReservoirMax = 12;
 	ReservoirCurrRoundCount = ReservoirMax;
-	RecoilSnappiness = 0.0;
 	TotalAmmoCount = ReservoirMax * 3;
 }
 
