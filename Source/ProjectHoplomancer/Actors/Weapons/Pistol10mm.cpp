@@ -19,6 +19,7 @@ APistol10mm::APistol10mm()
 	ReservoirMax = 12;
 	ReservoirCurrRoundCount = ReservoirMax;
 	RecoilSnappiness = 0.0;
+	TotalAmmoCount = ReservoirMax * 3;
 }
 
 // Called when the game starts or when spawned.
@@ -87,6 +88,7 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
 		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
 		ReservoirCurrRoundCount--;
+		TotalAmmoCount--;
 	}
 }
 

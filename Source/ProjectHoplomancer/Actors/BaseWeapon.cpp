@@ -27,10 +27,10 @@ ABaseWeapon::ABaseWeapon()
 	// in its respective blueprint!!!
 
 	// Default values for weapon sats.
-	DamagePrimary = 10;
-	DamageSecondary = 10;
+	DamagePrimary = 10.0;
+	DamageSecondary = 10.0;
 	Firerate = 0.5;
-	ProjectileVelocity = 5000;
+	ProjectileVelocity = 5000.0;
 	RecoilPitchMin = 0.0;
 	RecoilPitchMax = 0.0;
 	RecoilYawMin = 0.0;
@@ -38,6 +38,7 @@ ABaseWeapon::ABaseWeapon()
 	RecoilSnappiness = 0.0;
 	ReservoirMax = 8;
 	ReservoirCurrRoundCount = ReservoirMax;
+	TotalAmmoCount = ReservoirMax * 3;
 }
 
 
@@ -129,7 +130,15 @@ void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 	if (ReservoirCurrRoundCount < ReservoirMax)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
-		ReservoirCurrRoundCount = ReservoirMax;
+		int roundsNeeded = ReservoirMax - ReservoirCurrRoundCount;  // How many rounds are needed to fully reload.
+		int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
+		if (roundsAvailable > 0) {
+			// Add the rounds needed if we got enough to fully fill the gun up, or just add the rest we have left.
+			ReservoirCurrRoundCount += FMath::Min(roundsAvailable, roundsNeeded);
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("No extra ammo!"));
+		}
 	}
 }
 
@@ -149,13 +158,19 @@ void ABaseWeapon::ApplyRecoil()
 }
 
 
-int ABaseWeapon::GetCurrentRoundCount()
+int ABaseWeapon::GetCurrentReservoirRoundCount()
 {
 	return ReservoirCurrRoundCount;
 }
 
 
-void ABaseWeapon::SetCurrentRoundCount(int count)
+void ABaseWeapon::SetCurrentReservoirRoundCount(int count)
 {
 	ReservoirCurrRoundCount = count;
+}
+
+
+int ABaseWeapon::GetTotalAmmoCount()
+{
+	return TotalAmmoCount;
 }

@@ -42,8 +42,12 @@ protected:
 	// Next time this weapon can fire.
 	double NextFireTime;
 
-	// Variable for the weapon's current ammo count.
+	// Variable for the amount of ammo in the weapon's reservoir (magazine, cylinder, hopper, etc).
 	int ReservoirCurrRoundCount;
+
+	// Variable for the current total amount of ammo being carried.
+	int TotalAmmoCount;
+	// Ammo is tied to individual weapon instances, like in Halo or FEAR.
 
 	// Character wielding the weapon.
 	ACharacter* Wielder;
@@ -114,16 +118,29 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	int ReservoirMax;
 
+	// Variable for the maximum amount of ammo (reservoir + extra) this weapon can carry.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	int AmmoMax;
+
 	// Variable for the weapon's printed name on UIs and such.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	FString PrintName;
 
-	// Getter for the current ammo count.
+	// Getter for the current reservoir round count.
 	UFUNCTION(BlueprintCallable)
-	int GetCurrentRoundCount();
-	// Setter for the current ammo count.
+	int GetCurrentReservoirRoundCount();
+	// Setter for the current reservoir round count.
 	UFUNCTION(BlueprintCallable)
-	void SetCurrentRoundCount(int count);
+	void SetCurrentReservoirRoundCount(int count);
+
+	// Getter for the current total ammo count.
+	UFUNCTION(BlueprintCallable)
+	int GetTotalAmmoCount();
+
+	// Leaving this out for now since it's tricky to set up correctly!
+	// Setter for the current total ammo count.
+	//UFUNCTION(BlueprintCallable)
+	//void SetTotalAmmoCount(int count);
 
 	// Events:
 
