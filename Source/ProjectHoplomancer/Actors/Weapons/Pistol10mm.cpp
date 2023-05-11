@@ -16,8 +16,8 @@ APistol10mm::APistol10mm()
 	DamagePrimary = 20.0f;
 	Firerate = 0.33333f;
 	ProjectileVelocity = 10000.0f;
-	RecoilPitchMin = 1.5f;
-	RecoilPitchMax = 2.0f;
+	RecoilPitchMin = 2.0f;
+	RecoilPitchMax = 2.5f;
 	RecoilYawMin = -0.5f;
 	RecoilYawMax = 0.5f;
 	RecoilSnappiness = 0.5f;
@@ -89,6 +89,10 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			ReceiveWeaponFire(Parent, MuzzleLocation);
 			OnWeaponFire.Broadcast(Parent, MuzzleLocation);
 
+			//FVector traceStart = MuzzleLocation;
+			//FVector traceEnd = MuzzleLocation + MuzzleRotation.Vector() * 100000.0f;
+
+			//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 5.0f, 0, 2.0f);
 		}
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
