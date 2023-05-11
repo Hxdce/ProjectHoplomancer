@@ -27,11 +27,13 @@ void ALogicNPCSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!IsEnabled) {
+	if (!IsEnabled)
+	{
 		return;
 	}
 
-	if (NextSpawnTime <= GetWorld()->GetTimeSeconds()) {
+	if (NextSpawnTime <= GetWorld()->GetTimeSeconds())
+	{
 		Trigger();
 		NextSpawnTime = GetWorld()->GetTimeSeconds() + SpawnTimeInterval;
 	}

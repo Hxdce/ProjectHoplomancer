@@ -132,11 +132,13 @@ void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
 		int roundsNeeded = ReservoirMax - ReservoirCurrRoundCount;  // How many rounds are needed to fully reload.
 		int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
-		if (roundsAvailable > 0) {
+		if (roundsAvailable > 0)
+		{
 			// Add the rounds needed if we got enough to fully fill the gun up, or just add the rest we have left.
 			ReservoirCurrRoundCount += FMath::Min(roundsAvailable, roundsNeeded);
 		}
-		else {
+		else 
+		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("No extra ammo!"));
 		}
 	}
@@ -145,11 +147,13 @@ void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 
 void ABaseWeapon::ApplyRecoil()
 {
-	if (Wielder == nullptr) {
+	if (Wielder == nullptr)
+	{
 		return;
 	}
 	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
-	if (player != nullptr) {
+	if (player != nullptr)
+	{
 		double pitch = FMath::RandRange(RecoilPitchMin, RecoilPitchMax);
 		double yaw = FMath::RandRange(RecoilYawMin, RecoilYawMax);
 		double roll = -yaw / 2.0;

@@ -74,8 +74,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 	DecayCameraRecoilRotation(DeltaTime);
 
 	APlayerController* pc = GetLocalViewingPlayerController();
-	if (pc != nullptr) {
-		if (CameraRotMod.Pitch > CameraRotMaxPitchChange) {
+	if (pc != nullptr)
+	{
+		if (CameraRotMod.Pitch > CameraRotMaxPitchChange)
+		{
 			CameraRotMaxPitchChange = CameraRotMod.Pitch;
 		}
 		// Subtract the previous frame's rotation alteration so we don't stack.
@@ -246,7 +248,8 @@ void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRo
 // Handle and decay any camera recoiling effects e.g. from weapon recoil, injury, landing from falls, etc.
 void APlayerCharacter::DecayCameraRecoilRotation(float DeltaTime)
 {
-	if (!CameraRotMod.IsNearlyZero(0.001) || !CameraRecoilVelocity.IsNearlyZero(0.001)) {
+	if (!CameraRotMod.IsNearlyZero(0.001) || !CameraRecoilVelocity.IsNearlyZero(0.001))
+	{
 		CameraRotMod += CameraRecoilVelocity * DeltaTime;
 
 		double damping = FMath::Max(1.0 - (CameraRecoilDamping * DeltaTime), 0.0);  // Don't go below zero.
@@ -263,7 +266,8 @@ void APlayerCharacter::DecayCameraRecoilRotation(float DeltaTime)
 			FMath::Clamp(CameraRotMod.Roll, -89.0, 89.0)
 		);
 	}
-	else {
+	else
+	{
 		CameraRotMod = FRotator(0.0, 0.0, 0.0);
 		CameraRecoilVelocity = FRotator(0.0, 0.0, 0.0);
 	}

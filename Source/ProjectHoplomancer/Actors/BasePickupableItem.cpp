@@ -38,7 +38,8 @@ void ABasePickupableItem::Tick(float DeltaTime)
 void ABasePickupableItem::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	bool success = HandlePickupItem(OtherActor);
-	if (success) {
+	if (success)
+	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Can pick up the item!"));
 		Activate(OtherActor);
 	}
@@ -54,7 +55,8 @@ void ABasePickupableItem::NotifyActorBeginOverlap(AActor* OtherActor)
 bool ABasePickupableItem::HandlePickupItem(AActor* OtherActor)
 {
 	APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
-	if (p != nullptr && p->IsAlive) {
+	if (p != nullptr && p->IsAlive)
+	{
 		return true;
 	}
 	return false;

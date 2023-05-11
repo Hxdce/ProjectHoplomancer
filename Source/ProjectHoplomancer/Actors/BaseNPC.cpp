@@ -69,7 +69,8 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 void ABaseNPC::PrimaryAttack()
 {
-	if (GetWorld()->GetTimeSeconds() >= LastAttackTime + AttackPrimaryCooldownTime) {
+	if (GetWorld()->GetTimeSeconds() >= LastAttackTime + AttackPrimaryCooldownTime)
+	{
 		// GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "NPC is primary attacking!");
 		LastAttackTime = GetWorld()->GetTimeSeconds();
 
@@ -94,15 +95,18 @@ void ABaseNPC::PrimaryAttack()
 
 		DrawDebugSphere(GetWorld(), GetActorLocation(), r, 12, FColor::Red, false, 3.0f);
 
-		if (overlappedActors.Num() == 0) {
+		if (overlappedActors.Num() == 0)
+		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Sphere trace didn't hit anything!");
 		}
 
-		for (AActor* a : overlappedActors) {
+		for (AActor* a : overlappedActors)
+		{
 			FString n = FString::Printf(TEXT("NPC hit %s!"), *a->GetName());
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, n);
 			APlayerCharacter* p = Cast<APlayerCharacter>(a);
-			if (p != nullptr) {
+			if (p != nullptr)
+			{
 				TSubclassOf<UDamageType> damageType = UDamageType::StaticClass();
 				p->TakeDamage(AttackPrimaryDamage, FDamageEvent(damageType), GetController(), this);
 				FVector pos = GetActorLocation();
@@ -132,17 +136,20 @@ void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float Dam
 	{
 		AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode());
 
-		if (EventInstigator != nullptr) {
+		if (EventInstigator != nullptr)
+		{
 			FString out = FString::Printf(TEXT("NPC death causer is %s!"), *EventInstigator->GetPawn()->GetName());
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
 			ACharacter* inst = Cast<ACharacter>(EventInstigator->GetPawn());
-			if (inst == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)) {
+			if (inst == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+			{
 				// Only change the score if the event instigator for this NPC's death was the player.
 				if (GameMode != nullptr)
 				{
 					GameMode->AddToPlayerScore(PlayerScorePointsValue);
 				}
-				else {
+				else 
+				{
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("AProjectHoplomancerGameModeBase cast failed in BaseNPC!!!"));
 				}
 			}
@@ -157,9 +164,11 @@ void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float Dam
 		NPCMesh->SetSimulatePhysics(true);
 
 		// Add physics impuse to the corpse, if applicable.
-		if (DamageCauser != nullptr) {
+		if (DamageCauser != nullptr)
+		{
 			float impulseMult = 1.0f;
-			if (GameMode != nullptr) {
+			if (GameMode != nullptr)
+			{
 				impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
 			}
 			FVector impulse = DamageCauser->GetVelocity();
