@@ -174,3 +174,10 @@ int ABaseWeapon::GetTotalAmmoCount()
 {
 	return TotalAmmoCount;
 }
+
+
+void ABaseWeapon::GiveAmmo(int AmmoAmount)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Adding AmmoAmount's value to %s"), *PrintName));
+	TotalAmmoCount = FMath::Min(TotalAmmoCount + AmmoAmount, AmmoMax);
+}

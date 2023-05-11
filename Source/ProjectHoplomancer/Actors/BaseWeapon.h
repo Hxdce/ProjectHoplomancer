@@ -18,6 +18,16 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponFireSignature, class AActor*, Instigator, FVector, Location)
 
 
+// Enum for ammo types.
+UENUM(BlueprintType)
+enum WeaponAmmoTypes {
+	AMMO_NULL,
+	AMMO_10MM,
+	AMMO_12GAUGE,
+	AMMO_57SMG
+};
+
+
 UCLASS()
 class PROJECTHOPLOMANCER_API ABaseWeapon : public AActor
 {
@@ -122,6 +132,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	int AmmoMax;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=WeaponStats)
+	TEnumAsByte<WeaponAmmoTypes> AmmoType;
+
+
 	// Variable for the weapon's printed name on UIs and such.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	FString PrintName;
@@ -141,6 +155,10 @@ public:
 	// Setter for the current total ammo count.
 	//UFUNCTION(BlueprintCallable)
 	//void SetTotalAmmoCount(int count);
+
+	// Give ammo to this weapon.
+	UFUNCTION(BlueprintCallable)
+	void GiveAmmo(int AmmoAmount);
 
 	// Events:
 

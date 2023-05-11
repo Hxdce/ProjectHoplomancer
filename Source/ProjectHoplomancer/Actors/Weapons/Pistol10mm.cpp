@@ -24,6 +24,8 @@ APistol10mm::APistol10mm()
 	ReservoirMax = 12;
 	ReservoirCurrRoundCount = ReservoirMax;
 	TotalAmmoCount = ReservoirMax * 3;
+	AmmoType = AMMO_10MM;
+	AmmoMax = 132;
 }
 
 // Called when the game starts or when spawned.
