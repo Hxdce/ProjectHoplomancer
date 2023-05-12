@@ -4,6 +4,9 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 
+// Includes from project code:
+#include "../PlayerCharacter/PlayerCharacter.h"
+
 // This include always comes last:
 #include "BasePickupableItem.generated.h"
 
@@ -28,6 +31,10 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category=Collision)
 	class USphereComponent* PickupCollider;
 
+	bool PlayerIsOverlapping;
+	APlayerCharacter* OverlappingPlayerPtr;
+	double NextPlayerOverlapRecheckTime;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -36,12 +43,16 @@ public:
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+
 	// Proprietary functions:
 
 	// Function for checking whether the item meets its necessary criteria for being picked up.
 	// E.g. for a healing item, this would check if the player is injured.
-	virtual bool HandlePickupItem(AActor* OtherActor);
+	virtual bool HandlePickupItem(APlayerCharacter* PlayerActor);
 
 	// Function for what the item does when picked up.
-	virtual void Activate(AActor* OtherActor);
+	virtual void Activate(APlayerCharacter* PlayerActor);
+
+	// These two functions are basically only used by the player.
 };

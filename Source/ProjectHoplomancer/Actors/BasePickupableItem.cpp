@@ -1,7 +1,5 @@
 #include "./BasePickupableItem.h"
 
-#include "../PlayerCharacter/PlayerCharacter.h"
-
 
 // Sets default values
 ABasePickupableItem::ABasePickupableItem()
@@ -18,6 +16,10 @@ ABasePickupableItem::ABasePickupableItem()
 	// Set up world mesh.
 	WorldMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ThirdPersonMesh"));
 	WorldMesh->SetupAttachment(GetRootComponent());
+
+	OverlappingPlayerPtr = nullptr;
+	PlayerIsOverlapping = false;
+	NextPlayerOverlapRecheckTime = 0.0;
 }
 
 
@@ -32,29 +34,65 @@ void ABasePickupableItem::BeginPlay()
 void ABasePickupableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// This checks each tick if an overlapping player meets the pickup criteria.
+	// This means if something happens while the player is standing over an item, we can recheck
+	// if the pickup criteria is now met. E.g. taking damage at 100HP while standing over a healing item.
+	// We ONLY want to do this if the player is indeed overlapping for performance reasons.
+	if (PlayerIsOverlapping && GetWorld()->GetTimeSeconds() > NextPlayerOverlapRecheckTime)
+	{
+		APlayerCharacter* p = OverlappingPlayerPtr;
+		if (p != nullptr && p->IsAlive)
+		{
+			bool success = HandlePickupItem(p);
+			if (success)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Can pick up the item!"));
+				Activate(p);
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Couldn't pick up item!"));
+			}
+		}
+		NextPlayerOverlapRecheckTime = GetWorld()->GetTimeSeconds() + 1.0 / 20.0;  // Every 50 milliseconds.
+	}
 }
 
 
 void ABasePickupableItem::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	bool success = HandlePickupItem(OtherActor);
-	if (success)
+	APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
+	if (p != nullptr && p->IsAlive) // Ignore anything that isn't the player, and the player has to be alive.
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Can pick up the item!"));
-		Activate(OtherActor);
+		PlayerIsOverlapping = true;
+		OverlappingPlayerPtr = p;
+		bool success = HandlePickupItem(p);
+		if (success)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Can pick up the item!"));
+			Activate(p);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Couldn't pick up item!"));
+		}
 	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Couldn't pick up item!"));
-	}
-
 	Super::NotifyActorBeginOverlap(OtherActor);
 }
 
 
-bool ABasePickupableItem::HandlePickupItem(AActor* OtherActor)
+void ABasePickupableItem::NotifyActorEndOverlap(AActor* OtherActor)
 {
-	APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
+	PlayerIsOverlapping = false;
+	OverlappingPlayerPtr = nullptr;
+	Super::NotifyActorEndOverlap(OtherActor);
+}
+
+
+bool ABasePickupableItem::HandlePickupItem(APlayerCharacter* PlayerActor)
+{
+	APlayerCharacter* p = PlayerActor;
 	if (p != nullptr && p->IsAlive)
 	{
 		return true;
@@ -63,7 +101,7 @@ bool ABasePickupableItem::HandlePickupItem(AActor* OtherActor)
 }
 
 
-void ABasePickupableItem::Activate(AActor* OtherActor)
+void ABasePickupableItem::Activate(APlayerCharacter* PlayerActor)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Activating item."));
 	SetActorEnableCollision(false);

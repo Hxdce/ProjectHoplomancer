@@ -3,8 +3,6 @@
 
 #include "./BaseHealingItem.h"
 
-#include "../PlayerCharacter/PlayerCharacter.h"
-
 
 ABaseHealingItem::ABaseHealingItem()
 {
@@ -12,20 +10,20 @@ ABaseHealingItem::ABaseHealingItem()
 }
 
 
-bool ABaseHealingItem::HandlePickupItem(AActor* OtherActor)
+bool ABaseHealingItem::HandlePickupItem(APlayerCharacter* PlayerActor)
 {
-	APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
-	// Return true if cast was successful, player is alive, and player health is less than max.
+	APlayerCharacter* p = PlayerActor;
+	// Return true if pointer isn't null, player is alive, and player health is less than max.
 	return p != nullptr && p->IsAlive && p->GetHealth() < p->GetMaxHealth();
 }
 
 
-void ABaseHealingItem::Activate(AActor* OtherActor)
+void ABaseHealingItem::Activate(APlayerCharacter* PlayerActor)
 {
-	APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
-	if (p != nullptr)
+	APlayerCharacter* p = PlayerActor;
+	if (p != nullptr && p->IsAlive)
 	{
 		p->Heal(HealAmount);
 	}
-	Super::Activate(OtherActor);
+	Super::Activate(PlayerActor);
 }

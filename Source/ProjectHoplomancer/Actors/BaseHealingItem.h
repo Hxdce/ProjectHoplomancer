@@ -29,8 +29,8 @@ public:
 
 	// Function for checking whether the item meets its necessary criteria for being picked up.
 	// E.g. for a healing item, this would check if the player is injured.
-	virtual bool HandlePickupItem(AActor* OtherActor) override;
+	virtual bool HandlePickupItem(APlayerCharacter* PlayerActor) override;
 
 	// Function for what the item does when picked up.
-	virtual void Activate(AActor* OtherActor) override;
+	virtual void Activate(APlayerCharacter* PlayerActor) override;
 };
