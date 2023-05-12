@@ -154,6 +154,31 @@ bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 }
 
 
+int APlayerCharacter::GetHealth()
+{
+	return CurrentHealth;
+}
+
+
+void APlayerCharacter::SetHealth(int amount)
+{
+	if (amount <= 0)
+	{
+		Die();
+	}
+	else
+	{
+		CurrentHealth = amount;
+	}
+}
+
+
+int APlayerCharacter::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+
 void APlayerCharacter::Heal(int healAmount)
 {
 	if (IsAlive)

@@ -183,6 +183,16 @@ public:
 	// Function to handle picking up a weapon.
 	virtual bool TakeWeapon(ABaseWeapon* wpn);
 
+	// Health and death related functions:
+	UFUNCTION(BlueprintCallable)
+	int GetHealth();
+
+	UFUNCTION(BlueprintCallable)
+	void SetHealth(int amount);
+
+	UFUNCTION(BlueprintCallable)
+	int GetMaxHealth();
+
 	UFUNCTION(BlueprintCallable)
 	void Heal(int healAmount);
 
