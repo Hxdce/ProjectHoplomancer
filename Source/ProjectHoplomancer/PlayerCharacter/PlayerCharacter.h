@@ -178,7 +178,7 @@ public:
 
 	// Function for adding a physics impulse to the player, e.g. being pushed by explosions.
 	UFUNCTION(BlueprintCallable)
-	void AddPhysicsImpulse(FVector ImpulseOrigin, float magnitude);
+	void AddPhysicsImpulse(FVector ImpulseOrigin, float Magnitude);
 
 	// Function to handle picking up a weapon.
 	virtual bool TakeWeapon(ABaseWeapon* wpn);

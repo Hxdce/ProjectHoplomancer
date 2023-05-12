@@ -124,9 +124,9 @@ void ABaseNPC::DeathCleanup()
 }
 
 
-void ABaseNPC::Heal(int healAmount)
+void ABaseNPC::Heal(int HealAmount)
 {
-	CurrentHealth = FGenericPlatformMath::Min(CurrentHealth + healAmount, MaxHealth);
+	CurrentHealth = FGenericPlatformMath::Min(CurrentHealth + HealAmount, MaxHealth);
 }
 
 
@@ -148,7 +148,7 @@ void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float Dam
 				{
 					GameMode->AddToPlayerScore(PlayerScorePointsValue);
 				}
-				else 
+				else
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("AProjectHoplomancerGameModeBase cast failed in BaseNPC!!!"));
 				}
