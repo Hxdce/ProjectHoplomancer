@@ -27,10 +27,6 @@ class UInputMappingContext;
 class UInputAction;
 
 
-// Note to self: It might be better to refactor APlayerCharacter and ABaseNPC at some point so
-// they inherit from the same class! Some of their member functions & variables can be shared.
-
-
 // Custom delegate signatures:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathSignature)
 

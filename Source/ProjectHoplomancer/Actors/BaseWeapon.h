@@ -65,33 +65,7 @@ protected:
 	// Character wielding the weapon.
 	ACharacter* Wielder;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Overriden functions:
-
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
-	// Proprietary functions:
-
-	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
-	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
-
-	virtual float GetNextFireTime();
-	virtual void SetNextFireTime(double Time);
-
-	virtual bool GetThirdPersonMeshVisibility();
-	virtual void SetThirdPersonMeshVisibility(bool Vis);
-
-	virtual ACharacter* GetWielder();
-	virtual void SetWielder(ACharacter* NewWielder);
-
-	virtual void ReloadWeapon(bool EmptyReload = false);
-	virtual void ReloadFinish();
-
-	virtual void ApplyRecoil();
-
+public:
 	// Variable for the damage of the primary fire mode.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float DamagePrimary;
@@ -143,14 +117,49 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=WeaponStats)
 	TEnumAsByte<WeaponAmmoTypes> AmmoType;
 
-
 	// Variable for the weapon's printed name on UIs and such.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	FString PrintName;
 
+
+	// Overridden built-in UE5 class functions:
+	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+
+
+	// Proprietary functions:
+
+	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
+
+	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
+
+	virtual float GetNextFireTime();
+
+	virtual void SetNextFireTime(double Time);
+
+	virtual bool GetThirdPersonMeshVisibility();
+
+	virtual void SetThirdPersonMeshVisibility(bool Vis);
+
+	virtual ACharacter* GetWielder();
+
+	virtual void SetWielder(ACharacter* NewWielder);
+
+	virtual void ReloadWeapon(bool EmptyReload = false);
+
+	virtual void ReloadFinish();
+
+	virtual void ApplyRecoil();
+
 	// Getter for the current reservoir round count.
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentReservoirRoundCount();
+
 	// Setter for the current reservoir round count.
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentReservoirRoundCount(int count);
