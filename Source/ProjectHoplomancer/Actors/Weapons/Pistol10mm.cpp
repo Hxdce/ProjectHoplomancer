@@ -47,8 +47,8 @@ void APistol10mm::Tick(float DeltaTime)
 void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 	UWorld* World = GetWorld();
-	// Basic check for valid world + can't fire faster than weapon firerate.
-	if (!Parent || !World || World->GetTimeSeconds() < NextFireTime)
+	// Basic check for valid world + can't fire faster than weapon firerate + can't fire while reloading.
+	if (!Parent || !World || World->GetTimeSeconds() < NextFireTime || IsReloading)
 	{
 		return;
 	}

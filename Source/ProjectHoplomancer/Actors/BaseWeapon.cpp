@@ -26,11 +26,16 @@ ABaseWeapon::ABaseWeapon()
 	// IMPORTANT: If a derived child class prints the name "Base Weapon", it needs to have its Print Name value overriden
 	// in its respective blueprint!!!
 
+	NextFireTime = 0.0;
+	IsReloading = false;
+	Wielder = nullptr;
+
 	// Default values for weapon sats.
 	DamagePrimary = 10.0;
 	DamageSecondary = 10.0;
 	Firerate = 0.5;
 	ProjectileVelocity = 5000.0;
+	ReloadDuration = 1.0;
 	RecoilPitchMin = 0.0;
 	RecoilPitchMax = 0.0;
 	RecoilYawMin = 0.0;
@@ -127,21 +132,42 @@ void ABaseWeapon::SetWielder(ACharacter* NewWielder)
 
 void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 {
-	if (ReservoirCurrRoundCount < ReservoirMax)
+	int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
+	if (ReservoirCurrRoundCount < ReservoirMax && roundsAvailable > 0 && !IsReloading)
 	{
+		IsReloading = true;
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
-		int roundsNeeded = ReservoirMax - ReservoirCurrRoundCount;  // How many rounds are needed to fully reload.
-		int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
-		if (roundsAvailable > 0)
-		{
-			// Add the rounds needed if we got enough to fully fill the gun up, or just add the rest we have left.
-			ReservoirCurrRoundCount += FMath::Min(roundsAvailable, roundsNeeded);
-		}
-		else 
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("No extra ammo!"));
-		}
+
+		// Set timed function for finishing the reload.
+		FTimerHandle handle;
+		GetWorld()->GetTimerManager().SetTimer(handle, this, &ABaseWeapon::ReloadFinish, ReloadDuration, false);
 	}
+	else if (ReservoirCurrRoundCount == ReservoirMax)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Don't need to reload!"));
+	}
+	else if (roundsAvailable <= 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("No extra ammo!"));
+	}
+}
+
+
+void ABaseWeapon::ReloadFinish()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
+	if (player != nullptr && player->IsAlive)
+	{
+		// Might be wise to make the weapon binded to the OnPlayerDeath delegate soon,
+		// then a function for cancelling the reload can just be invoked through that.
+
+		int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
+		int roundsNeeded = ReservoirMax - ReservoirCurrRoundCount;  // How many rounds are needed to fully reload.
+		// Add the rounds needed if we got enough to fully fill the gun up, or just add the rest we have left.
+		ReservoirCurrRoundCount += FMath::Min(roundsAvailable, roundsNeeded);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finished reloading!"));
+	}
+	IsReloading = false;
 }
 
 

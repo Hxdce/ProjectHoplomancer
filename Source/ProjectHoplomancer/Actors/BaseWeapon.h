@@ -59,6 +59,9 @@ protected:
 	int TotalAmmoCount;
 	// Ammo is tied to individual weapon instances, like in Halo or FEAR.
 
+	// Boolean for whether the weapon is reloading or not.
+	bool IsReloading;
+
 	// Character wielding the weapon.
 	ACharacter* Wielder;
 
@@ -85,6 +88,7 @@ public:
 	virtual void SetWielder(ACharacter* NewWielder);
 
 	virtual void ReloadWeapon(bool EmptyReload = false);
+	virtual void ReloadFinish();
 
 	virtual void ApplyRecoil();
 
@@ -103,6 +107,10 @@ public:
 	// Variable for the projectile velocity of the weapon.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float ProjectileVelocity;
+
+	// Variable for how long the weapon takes to reload.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float ReloadDuration;
 
 	// Variable for the minimum vertical recoil of the weapon.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
