@@ -12,6 +12,7 @@
 #include "GameFramework/DamageType.h"
 
 // Includes from project code:
+#include "../Actors/BaseGameCharacter.h"
 #include "../ProjectHoplomancerGameModeBase.h"
 #include "../PlayerCharacter/PlayerCharacter.h"
 
@@ -19,7 +20,7 @@
 #include "BaseNPC.generated.h"
 
 UCLASS()
-class PROJECTHOPLOMANCER_API ABaseNPC : public ACharacter
+class PROJECTHOPLOMANCER_API ABaseNPC : public ABaseGameCharacter
 {
 	GENERATED_BODY()
 
@@ -34,28 +35,7 @@ protected:
 	double LastAttackTime;
 	double DeathCleanupTime;
 
-	// Current health.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	int CurrentHealth;
-
-	// Maximum health.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	int MaxHealth;
-
-	// Character is alive?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	bool IsAlive;
-
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	// Built-in function override for taking damage.
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
 	// Amount of points to give the player on death.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	int PlayerScorePointsValue;
@@ -76,18 +56,32 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	float AttackPhysicsImpulse;
 
+
+	// Overridden built-in UE5 class functions:
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Built-in function override for taking damage.
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+
+	// Overridden project code class functions:
+
+	// ...
+
+
 	// Proprietary functions below:
 
 	UFUNCTION(BlueprintCallable)
-	void PrimaryAttack();
+	virtual void PrimaryAttack();
 
 	// Used for deleting the remains of an NPC after death, e.g. its ragdoll or static death pose.
-	void DeathCleanup();
+	virtual void DeathCleanup();
 
-	UFUNCTION(BlueprintCallable)
-	void Heal(int HealAmount);
-
-	UFUNCTION(BlueprintCallable)
-	void Die(AController* EventInstigator=nullptr, AActor* DamageCauser=nullptr, float DamageAmount=0.0f);
-
+	// Function for handling NPC death.
+	virtual void HandleDeath(AController* EventInstigator=nullptr, AActor* DamageCauser=nullptr, float DamageAmount=0.0f);
 };

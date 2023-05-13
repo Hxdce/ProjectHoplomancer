@@ -13,9 +13,10 @@
 #include "TimerManager.h"
 
 // Includes from project code:
+#include "../Actors/BaseGameCharacter.h"
+#include "../ProjectHoplomancerGameModeBase.h"
 #include "../Actors/BaseProjectile.h"
 #include "../Actors/BaseWeapon.h"
-#include "../ProjectHoplomancerGameModeBase.h"
 
 // This include always comes last:
 #include "PlayerCharacter.generated.h"
@@ -35,7 +36,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathSignature)
 
 
 UCLASS()
-class PROJECTHOPLOMANCER_API APlayerCharacter : public ACharacter
+class PROJECTHOPLOMANCER_API APlayerCharacter : public ABaseGameCharacter
 {
 	GENERATED_BODY()
 
@@ -131,14 +132,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	FVector MuzzleOffset;
 
-	// Current health.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	int CurrentHealth;
-
-	// Maximum health.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	int MaxHealth;
-
 	// Proprietary Functions:
 
 	void Move(const FInputActionValue& Value);
@@ -154,10 +147,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	ABaseWeapon* CurrWeapon;
 
-	// Character is alive?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	bool IsAlive;
-
 	// Higher values increase the amount of damping with camera recoil.
 	UPROPERTY(EditAnywhere, Category=Camera)
 	double CameraRecoilDamping;
@@ -165,14 +154,23 @@ public:
 	UPROPERTY(EditAnywhere, Category=Camera)
 	double CameraRecoilSpringMagnitude;
 
+
+	// Overridden built-in UE5 class functions:
+
 	// Called every frame.
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input.
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Built-in function override for taking damage.
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+
+	// Overridden project code class functions:
+
+	void Die() override;
+
 
 	// Proprietary functions below:
 
@@ -181,32 +179,18 @@ public:
 	void AddPhysicsImpulse(FVector ImpulseOrigin, float Magnitude);
 
 	// Function to handle picking up a weapon.
-	virtual bool TakeWeapon(ABaseWeapon* wpn);
-
-	// Health and death related functions:
-	UFUNCTION(BlueprintCallable)
-	int GetHealth();
-
-	UFUNCTION(BlueprintCallable)
-	void SetHealth(int amount);
-
-	UFUNCTION(BlueprintCallable)
-	int GetMaxHealth();
-
-	UFUNCTION(BlueprintCallable)
-	void Heal(int healAmount);
-
-	UFUNCTION(BlueprintCallable)
-	void Die();
+	bool TakeWeapon(ABaseWeapon* wpn);
 
 	// Function for applying camera recoil effects.
 	void CameraApplyRecoil(FRotator RecoilRotator, double Snappiness=0.0);
+
 
 	// Events:
 
 	// Player death event, for using in the PLAYER'S EVENT GRAPH.
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="Player Death"))
 	void ReceivePlayerDeath();
+
 
 	// Delegates:
 

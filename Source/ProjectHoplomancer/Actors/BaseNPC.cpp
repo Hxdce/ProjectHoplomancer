@@ -60,7 +60,7 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	CurrentHealth -= DamageAmount;
 	if (CurrentHealth <= 0 && IsAlive)
 	{
-		Die(EventInstigator, DamageCauser, DamageAmount);
+		HandleDeath(EventInstigator, DamageCauser, DamageAmount);
 	}
 
 	return res;
@@ -124,13 +124,7 @@ void ABaseNPC::DeathCleanup()
 }
 
 
-void ABaseNPC::Heal(int HealAmount)
-{
-	CurrentHealth = FGenericPlatformMath::Min(CurrentHealth + HealAmount, MaxHealth);
-}
-
-
-void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float DamageAmount)
+void ABaseNPC::HandleDeath(AController* EventInstigator, AActor* DamageCauser, float DamageAmount)
 {
 	if (IsAlive)
 	{
@@ -162,20 +156,6 @@ void ABaseNPC::Die(AController* EventInstigator, AActor* DamageCauser, float Dam
 		NPCCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		NPCMesh->bPauseAnims = true;
 		NPCMesh->SetSimulatePhysics(true);
-
-		// Add physics impuse to the corpse, if applicable.
-		if (DamageCauser != nullptr)
-		{
-			float impulseMult = 1.0f;
-			if (GameMode != nullptr)
-			{
-				impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
-			}
-			FVector impulse = DamageCauser->GetVelocity();
-			impulse.Normalize();
-			impulse *= DamageAmount * 1000.0f * impulseMult;
-			NPCMesh->AddImpulseAtLocation(impulse, DamageCauser->GetActorLocation());
-		}
 
 		// Destroy the NPC controller.
 		if (NPCController != nullptr)
