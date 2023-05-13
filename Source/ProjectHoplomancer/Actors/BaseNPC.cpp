@@ -157,6 +157,22 @@ void ABaseNPC::HandleDeath(AController* EventInstigator, AActor* DamageCauser, f
 		NPCMesh->bPauseAnims = true;
 		NPCMesh->SetSimulatePhysics(true);
 
+		// Add physics impuse to the corpse, if applicable.
+		if (DamageCauser != nullptr)
+		{
+			float impulseMult = 1.0f;
+			if (GameMode != nullptr)
+			{
+				impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
+			}
+			impulseMult *= GameMode->NPCDeathPhysicsImpulseMultiplier;  // Make the killing hit have a stronger physics impulse.
+
+			FVector impulse = DamageCauser->GetVelocity();
+			impulse.Normalize();
+			impulse *= DamageAmount * 1000.0f * impulseMult;
+			NPCMesh->AddImpulseAtLocation(impulse, DamageCauser->GetActorLocation());
+		}
+
 		// Destroy the NPC controller.
 		if (NPCController != nullptr)
 		{

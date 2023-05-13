@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	float ProjectilePhysicsImpulseMultiplier = 1.0f;
 
+	// Increases the physics impulse above for the killing hit on an NPC.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	float NPCDeathPhysicsImpulseMultiplier = 3.0f;
 protected:
 	int PlayerScore = 0;
 };
