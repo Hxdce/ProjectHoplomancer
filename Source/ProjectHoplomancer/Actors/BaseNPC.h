@@ -7,7 +7,6 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Components/CapsuleComponent.h"
 #include "AIController.h"
-#include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/DamageType.h"
