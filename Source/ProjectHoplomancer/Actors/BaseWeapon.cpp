@@ -68,7 +68,7 @@ void ABaseWeapon::Tick(float DeltaTime)
 void ABaseWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
-	if (p != nullptr)
+	if (p != nullptr && p->IsAlive) // Ignore anything that isn't the player, and the player has to be alive.
 	{
 		bool success = p->TakeWeapon(this);
 		if (!success)
@@ -78,6 +78,12 @@ void ABaseWeapon::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 
 	Super::NotifyActorBeginOverlap(OtherActor);
+}
+
+
+void ABaseWeapon::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorEndOverlap(OtherActor);
 }
 
 
