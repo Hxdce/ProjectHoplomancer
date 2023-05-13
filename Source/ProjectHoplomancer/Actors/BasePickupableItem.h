@@ -31,8 +31,13 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category=Collision)
 	class USphereComponent* PickupCollider;
 
+	// Boolean for whether the player is currently overlapping the pickup bounds.
 	bool PlayerIsOverlapping;
+
+	// Pointer to the overlapping player.
 	APlayerCharacter* OverlappingPlayerPtr;
+
+	// When to next check for pickup with the overlapping player.
 	double NextPlayerOverlapRecheckTime;
 
 public:
