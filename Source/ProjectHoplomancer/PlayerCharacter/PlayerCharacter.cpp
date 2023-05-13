@@ -116,6 +116,13 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	
 	float res = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	FRotator damageRecoil = FRotator(
+		FMath::FRandRange(3.0, 1.0), FMath::FRandRange(-1.0, 1.0), FMath::FRandRange(-1.0, 1.0)
+	);
+	damageRecoil *= FMath::Min(DamageAmount * 0.2, 10.0);
+
+	CameraApplyRecoil(damageRecoil);
+
 	CurrentHealth -= DamageAmount;
 	if (CurrentHealth <= 0)
 	{
