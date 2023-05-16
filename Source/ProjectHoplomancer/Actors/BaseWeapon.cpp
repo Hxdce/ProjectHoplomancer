@@ -144,9 +144,18 @@ void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 		IsReloading = true;
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
 
+		FTimerManager* TimerMgr = &GetWorld()->GetTimerManager();
+
 		// Set timed function for finishing the reload.
-		FTimerHandle handle;
-		GetWorld()->GetTimerManager().SetTimer(handle, this, &ABaseWeapon::ReloadFinish, ReloadDuration, false);
+		FTimerHandle handleReloadFinish;
+		TimerMgr->SetTimer(handleReloadFinish, this, &ABaseWeapon::ReloadFinish, ReloadDuration, false);
+
+		if (SoundFinishReload)
+		{
+			FTimerHandle handleSoundFinishReload;
+			float playTime = ReloadDuration - SoundFinishReload->GetDuration()/2.0;
+			TimerMgr->SetTimer(handleSoundFinishReload, this, &ABaseWeapon::DevReloadFinishSound, playTime, false);
+		}
 	}
 	else if (ReservoirCurrRoundCount == ReservoirMax)
 	{
@@ -174,6 +183,15 @@ void ABaseWeapon::ReloadFinish()
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finished reloading!"));
 	}
 	IsReloading = false;
+}
+
+
+void ABaseWeapon::DevReloadFinishSound()
+{
+	if (SoundFinishReload)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundFinishReload, GetActorLocation(), FRotator::ZeroRotator);
+	}
 }
 
 

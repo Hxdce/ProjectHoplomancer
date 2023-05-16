@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Includes from project code:
 #include "./BaseProjectile.h"
@@ -12,6 +13,10 @@
 
 // This include always comes last:
 #include "BaseWeapon.generated.h"
+
+
+// Forward declarations:
+class USoundBase;
 
 
 // Custom delegate signatures:
@@ -64,6 +69,14 @@ protected:
 
 	// Character wielding the weapon.
 	ACharacter* Wielder;
+
+	// Primary attack SFX.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
+	USoundBase* SoundPrimaryAttack;
+
+	// Finish reload SFX.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
+	USoundBase* SoundFinishReload;
 
 public:
 	// Variable for the damage of the primary fire mode.
@@ -153,6 +166,8 @@ public:
 	virtual void ReloadWeapon(bool EmptyReload = false);
 
 	virtual void ReloadFinish();
+
+	virtual void DevReloadFinishSound();  // Probably gonna change how this works at some point!
 
 	virtual void ApplyRecoil();
 
