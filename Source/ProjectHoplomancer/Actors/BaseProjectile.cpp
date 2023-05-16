@@ -3,9 +3,11 @@
 
 #include "./BaseProjectile.h"
 
-#include "../PlayerCharacter/PlayerCharacter.h"
+//#include "../PlayerCharacter/PlayerCharacter.h"
 #include "Engine/DamageEvents.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "./BaseNPC.h"
+
 
 // Sets default values
 ABaseProjectile::ABaseProjectile()
@@ -51,8 +53,18 @@ void ABaseProjectile::Tick(float DeltaTime)
 // Invoked when hitting something.
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherComponent->GetName());
-	if (OtherActor != this && OtherActor != this->GetOwner())
+	bool isNotNull = OtherActor != nullptr && OtherComponent != nullptr;
+
+	/*
+	if (isNotNull)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherComponent->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherActor->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Invoking OnHit");
+	}
+	*/
+
+	if (isNotNull && OtherActor != this && OtherActor != this->GetOwner())
 	{
 		if (OtherComponent->IsSimulatingPhysics())
 		{
@@ -68,8 +80,32 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 			impulse *= DamageValue * 1000.0f * impulseMult;
 			OtherComponent->AddImpulseAtLocation(impulse, Hit.ImpactPoint);
 		}
-		Destroy();
+		else
+		{
+			ABaseNPC* npc = Cast<ABaseNPC>(OtherActor);
+			if (npc != nullptr)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Hitting an NPC");
+				float damage = DamageValue;
+				if (Hit.Component != nullptr)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, Hit.Component.Get()->GetName());
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, Hit.BoneName.ToString());
+					if (Hit.BoneName.ToString() == "head")
+					{
+						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Head");
+						damage *= 3.0;
+					}
+				}
+
+
+				TSubclassOf<UDamageType> damageType = UDamageType::StaticClass();
+				npc->TakeDamage(damage, FDamageEvent(damageType), ProjectileFirer, this);
+			}
+		}
+
 	}
+	Destroy();
 }
 
 
@@ -86,6 +122,7 @@ void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 	{
 		return;
 	}
+	/*
 	if (OtherActor != this && OtherActor != this->GetOwner())
 	{
 		ABaseNPC* npc = Cast<ABaseNPC>(OtherActor);
@@ -98,6 +135,7 @@ void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 		}
 		Destroy();
 	}
+	*/
 }
 
 

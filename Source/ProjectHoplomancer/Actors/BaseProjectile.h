@@ -14,6 +14,11 @@
 // This include always comes last:
 #include "BaseProjectile.generated.h"
 
+
+// Forward declarations:
+class APlayerCharacter;
+
+
 UCLASS()
 class PROJECTHOPLOMANCER_API ABaseProjectile : public AActor
 {
