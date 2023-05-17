@@ -83,5 +83,5 @@ public:
 	virtual void DeathCleanup();
 
 	// Function for handling NPC death.
-	virtual void HandleDeath(AController* EventInstigator=nullptr, AActor* DamageCauser=nullptr, float DamageAmount=0.0f);
+	virtual void HandleDeath(float DamageAmount=0.0f, AController* EventInstigator=nullptr, double PhysicsImpulse=0.0, AActor* DamageCauser=nullptr);
 };

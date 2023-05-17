@@ -60,7 +60,8 @@ float ABaseNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	CurrentHealth -= DamageAmount;
 	if (CurrentHealth <= 0 && IsAlive)
 	{
-		HandleDeath(EventInstigator, DamageCauser, DamageAmount);
+		double physicsImpulse = DamageEvent.DamageTypeClass.GetDefaultObject()->DamageImpulse;
+		HandleDeath(DamageAmount, EventInstigator, physicsImpulse, DamageCauser);
 	}
 
 	return res;
@@ -124,7 +125,7 @@ void ABaseNPC::DeathCleanup()
 }
 
 
-void ABaseNPC::HandleDeath(AController* EventInstigator, AActor* DamageCauser, float DamageAmount)
+void ABaseNPC::HandleDeath(float DamageAmount, AController* EventInstigator, double PhysicsImpulse, AActor* DamageCauser)
 {
 	if (IsAlive)
 	{
@@ -157,19 +158,20 @@ void ABaseNPC::HandleDeath(AController* EventInstigator, AActor* DamageCauser, f
 		NPCMesh->bPauseAnims = true;
 		NPCMesh->SetSimulatePhysics(true);
 
-		// Add physics impuse to the corpse, if applicable.
+		// Add physics impulse to the corpse, if applicable.
 		if (DamageCauser != nullptr)
 		{
-			float impulseMult = 1.0f;
+			float deathMult = 1.0f;
 			if (GameMode != nullptr)
 			{
-				impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
+				deathMult *= GameMode->NPCDeathPhysicsImpulseMultiplier;  // Make the killing hit have a stronger physics impulse.
 			}
-			impulseMult *= GameMode->NPCDeathPhysicsImpulseMultiplier;  // Make the killing hit have a stronger physics impulse.
 
 			FVector impulse = DamageCauser->GetVelocity();
 			impulse.Normalize();
-			impulse *= DamageAmount * 1000.0f * impulseMult;
+			impulse *= PhysicsImpulse * deathMult;
+			FString out = FString::Printf(TEXT("NPC death impulse strength is %f!"), impulse.Length());
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
 			NPCMesh->AddImpulseAtLocation(impulse, DamageCauser->GetActorLocation());
 		}
 

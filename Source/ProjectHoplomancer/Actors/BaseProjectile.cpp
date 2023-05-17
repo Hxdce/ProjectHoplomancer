@@ -8,7 +8,6 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "./BaseNPC.h"
 
-
 // Sets default values
 ABaseProjectile::ABaseProjectile()
 {
@@ -18,6 +17,7 @@ ABaseProjectile::ABaseProjectile()
 	Collider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
 	Collider->InitSphereRadius(4.0f);
 	Collider->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
+	Collider->SetEnableGravity(false);
 
 	RootComponent = Collider;
 
@@ -55,29 +55,42 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 {
 	bool isNotNull = OtherActor != nullptr && OtherComponent != nullptr;
 
-	/*
+	
 	if (isNotNull)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherComponent->GetName());
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherActor->GetName());
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Invoking OnHit");
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Invoking OnHit");
 	}
-	*/
+	
 
-	if (isNotNull && OtherActor != this && OtherActor != this->GetOwner())
+	if (OtherActor != this && OtherActor != this->GetOwner())
 	{
+		// Mass in grains / grains per gram * grams per kilogram.
+		double projectileMassKG = ProjectileMass / (15.4323584 * 1000.0);
+		// 100 Unreal units = 1 meter so divide this by 100 to get meters/sec.
+		double projectileVelocity = MovementComponent->Velocity.Length() / 100.0;
+
+
+		// Set up the final impulse variable.
+		// Bullets don't impart much force in real life so we need this pretty high for it to be noticeabe!
+		double impulseMult = 1000.0f;
+		AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (GameMode != nullptr)
+		{
+			impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
+		}
+		FVector impulse = MovementComponent->Velocity;
+		impulse.Normalize();
+		// Impulse is represented in newton-seconds.
+		impulse *= projectileMassKG * projectileVelocity * impulseMult;
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Impulse set up!");
+
 		if (OtherComponent->IsSimulatingPhysics())
 		{
-			float impulseMult = 1.0f;
-			AProjectHoplomancerGameModeBase* GameMode = Cast<AProjectHoplomancerGameModeBase>(GetWorld()->GetAuthGameMode());
-			if (GameMode != nullptr)
-			{
-				impulseMult = GameMode->ProjectilePhysicsImpulseMultiplier;
-			}
-
-			FVector impulse = MovementComponent->Velocity;
-			impulse.Normalize();
-			impulse *= DamageValue * 1000.0f * impulseMult;
+			FString out = FString::Printf(TEXT("Physics object impulse strength is %f!"), impulse.Length());
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
 			OtherComponent->AddImpulseAtLocation(impulse, Hit.ImpactPoint);
 		}
 		else
@@ -85,7 +98,7 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 			ABaseNPC* npc = Cast<ABaseNPC>(OtherActor);
 			if (npc != nullptr)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Hitting an NPC");
+				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Hitting an NPC");
 				float damage = DamageValue;
 				if (Hit.Component != nullptr)
 				{
@@ -100,6 +113,7 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 
 
 				TSubclassOf<UDamageType> damageType = UDamageType::StaticClass();
+				damageType.GetDefaultObject()->DamageImpulse = impulse.Length();
 				npc->TakeDamage(damage, FDamageEvent(damageType), ProjectileFirer, this);
 			}
 		}

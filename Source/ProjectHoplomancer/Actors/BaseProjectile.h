@@ -48,9 +48,15 @@ public:
 	UPROPERTY()
 	TObjectPtr<class AController> ProjectileFirer;
 
-	// Damage value.
-	UPROPERTY(EditAnywhere)
+	//UPROPERTY(EditAnywhere)
+	// Damage value. 
+	// Commented out UPROPERTY because this really should be controlled in
+	// the weapon blueprints instead of directly in the ammo blueprints!
 	float DamageValue;
+
+	// Projectile mass, in grains. For physics impulse calculation. 1 grain is 1/15.4323584 of a gram.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
+	double ProjectileMass;
 
 	// Function to invoke when hitting something.
 	UFUNCTION()
