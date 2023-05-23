@@ -165,7 +165,7 @@ public:
 
 	// Overridden project code class functions:
 
-	void Die() override;
+	void Die_Implementation() override;
 
 
 	// Proprietary functions below:

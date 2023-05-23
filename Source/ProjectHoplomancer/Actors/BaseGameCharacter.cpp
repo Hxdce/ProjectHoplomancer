@@ -37,13 +37,13 @@ void ABaseGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 }
 
 
-int ABaseGameCharacter::GetHealth()
+int ABaseGameCharacter::GetHealth_Implementation()
 {
 	return CurrentHealth;
 }
 
 
-void ABaseGameCharacter::SetHealth(int amount)
+void ABaseGameCharacter::SetHealth_Implementation(int amount)
 {
 	if (amount <= 0)
 	{
@@ -56,13 +56,13 @@ void ABaseGameCharacter::SetHealth(int amount)
 }
 
 
-int ABaseGameCharacter::GetMaxHealth()
+int ABaseGameCharacter::GetMaxHealth_Implementation()
 {
 	return MaxHealth;
 }
 
 
-void ABaseGameCharacter::Heal(int healAmount)
+void ABaseGameCharacter::Heal_Implementation(int healAmount)
 {
 	if (IsAlive)
 	{
@@ -71,7 +71,7 @@ void ABaseGameCharacter::Heal(int healAmount)
 }
 
 
-void ABaseGameCharacter::Die()
+void ABaseGameCharacter::Die_Implementation()
 {
 	if (IsAlive)
 	{

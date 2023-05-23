@@ -4,13 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "../Interfaces/InterfaceKillablePawn.h"
+
 #include "BaseGameCharacter.generated.h"
 
 // The base game character class. 
-// This is used for functions, variables, and behaviors shared between the player and NPCs.
+// This is used for the functions, variables, and behaviors shared between HUMANOID pawns.
+// E.g. the player and certain NPCs.
 
 UCLASS()
-class PROJECTHOPLOMANCER_API ABaseGameCharacter : public ACharacter
+class PROJECTHOPLOMANCER_API ABaseGameCharacter : public ACharacter, public IKillablePawn
 {
 	GENERATED_BODY()
 
@@ -42,22 +46,27 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-	// Proprietary functions below:
+	// Interface functions below:
 
 	// Health and death related functions:
-	UFUNCTION(BlueprintCallable)
-	virtual int GetHealth();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	int GetHealth();
+	virtual int GetHealth_Implementation();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void SetHealth(int amount);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetHealth(int amount);
+	virtual void SetHealth_Implementation(int amount);
 
-	UFUNCTION(BlueprintCallable)
-	virtual int GetMaxHealth();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	int GetMaxHealth();
+	virtual int GetMaxHealth_Implementation();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void Heal(int healAmount);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Heal(int healAmount);
+	virtual void Heal_Implementation(int healAmount);
 
-	UFUNCTION(BlueprintCallable)
-	virtual void Die();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Die();
+	virtual void Die_Implementation();
 
 };

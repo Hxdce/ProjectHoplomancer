@@ -161,7 +161,7 @@ bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 }
 
 
-void APlayerCharacter::Die()
+void APlayerCharacter::Die_Implementation()
 {
 	if (IsAlive)
 	{
