@@ -3,9 +3,9 @@
 
 #include "./BaseProjectile.h"
 
-//#include "../PlayerCharacter/PlayerCharacter.h"
 #include "Engine/DamageEvents.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "../ProjectHoplomancerGameModeBase.h"
 #include "./BaseNPC.h"
 
 // Sets default values

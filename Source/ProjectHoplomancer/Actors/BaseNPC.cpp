@@ -4,6 +4,9 @@
 #include "./BaseNPC.h"
 
 #include "Engine/DamageEvents.h"
+#include "GameFramework/DamageType.h"
+
+#include "../ProjectHoplomancerGameModeBase.h"
 
 // Sets default values
 ABaseNPC::ABaseNPC()

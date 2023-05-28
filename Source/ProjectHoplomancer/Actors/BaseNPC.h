@@ -9,15 +9,16 @@
 #include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "GameFramework/DamageType.h"
 
 // Includes from project code:
 #include "../Actors/BaseGameCharacter.h"
-#include "../ProjectHoplomancerGameModeBase.h"
 #include "../PlayerCharacter/PlayerCharacter.h"
 
 // This include always comes last:
 #include "BaseNPC.generated.h"
+
+
+// The base NPC class. Specifically built for humanoid-style NPCs.
 
 UCLASS()
 class PROJECTHOPLOMANCER_API ABaseNPC : public ABaseGameCharacter

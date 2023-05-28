@@ -8,9 +8,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/DamageType.h"
 
-// Includes from project code:
-#include "../ProjectHoplomancerGameModeBase.h"
-
 // This include always comes last:
 #include "BaseProjectile.generated.h"
 
