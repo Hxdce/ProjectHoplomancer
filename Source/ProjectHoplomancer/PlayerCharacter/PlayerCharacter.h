@@ -14,8 +14,6 @@
 
 // Includes from project code:
 #include "../Actors/BaseGameCharacter.h"
-#include "../ProjectHoplomancerGameModeBase.h"
-#include "../Actors/BaseWeapon.h"
 
 // This include always comes last:
 #include "PlayerCharacter.generated.h"
@@ -24,6 +22,7 @@
 // Forward declarations:
 class UInputMappingContext;
 class UInputAction;
+class ABaseWeapon;
 
 
 // Custom delegate signatures:

@@ -7,6 +7,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+#include "../ProjectHoplomancerGameModeBase.h"
+#include "../Actors/BaseWeapon.h"
+
 
 // Sets default values.
 APlayerCharacter::APlayerCharacter()
