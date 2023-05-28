@@ -15,7 +15,6 @@
 // Includes from project code:
 #include "../Actors/BaseGameCharacter.h"
 #include "../ProjectHoplomancerGameModeBase.h"
-#include "../Actors/BaseProjectile.h"
 #include "../Actors/BaseWeapon.h"
 
 // This include always comes last:
@@ -88,23 +87,6 @@ protected:
 	
 
 	// ---
-	// Dev gun stuff:
-
-	// Dev Projectile.
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class ABaseProjectile> DevProjectileClass;
-	// Dev Projectile Firerate.
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	double DevProjectileFirerate;
-	// Next time player can fire.
-	double DevProjectileNextFireTime;
-	// Bool for controlling whether the dev gun is active.
-	bool DevUseDevGun;
-	
-	// ---------
-	
-
-	// ---
 	// Camera recoil stuff:
 
 	// Camera rotation modification for recoil.
@@ -118,6 +100,7 @@ protected:
 
 	// ---------
 	
+
 	// ---
 	// Other:
 

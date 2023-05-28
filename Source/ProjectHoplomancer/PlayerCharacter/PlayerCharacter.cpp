@@ -26,10 +26,6 @@ APlayerCharacter::APlayerCharacter()
 
 	GetMesh()->SetOwnerNoSee(true);
 
-	// Dev variables.
-	DevProjectileFirerate = 0.25f;
-	DevUseDevGun = false;
-
 	MaxHealth = 100;
 	CurrentHealth = MaxHealth;
 	IsAlive = true;
@@ -290,41 +286,7 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 	FRotator MuzzleRotation;
 	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
 
-	// Dev code for testing firing projectiles.
-	if (DevUseDevGun)
-	{
-		// Can't fire faster than weapon firerate.
-		if (GetWorld()->GetTimeSeconds() < DevProjectileNextFireTime)
-		{
-			return;
-		}
-
-		if (DevProjectileClass)
-		{
-			UWorld* World = GetWorld();
-			if (World)
-			{
-				FActorSpawnParameters SP;
-				SP.Owner = this;
-				SP.Instigator = GetInstigator();
-
-				ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(DevProjectileClass, MuzzleLocation, MuzzleRotation, SP);
-				if (Projectile)
-				{
-					// Set the projectile's initial trajectory.
-					FVector LaunchDirection = MuzzleRotation.Vector();
-					Projectile->FireInDirection(LaunchDirection);
-				}
-				DevProjectileNextFireTime = GetWorld()->GetTimeSeconds() + DevProjectileFirerate;
-			}
-		}
-	}
-	else
-	{
-		//FString out = FString::Printf(TEXT("Attempting primary attack with %s!"), *CurrWeapon->GetClass()->GetName());
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, out);
-		CurrWeapon->PrimaryAttack(this, MuzzleLocation, MuzzleRotation);
-	}
+	CurrWeapon->PrimaryAttack(this, MuzzleLocation, MuzzleRotation);
 }
 
 
