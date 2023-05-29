@@ -29,10 +29,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Fired Projectile.
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class ABaseProjectile> WeaponProjectile;
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

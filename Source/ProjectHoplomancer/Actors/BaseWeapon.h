@@ -78,6 +78,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
 	USoundBase* SoundFinishReload;
 
+	// Fired Projectile.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	TSubclassOf<class ABaseProjectile> WeaponProjectile;
+
 public:
 	// Variable for the damage of the primary fire mode.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
