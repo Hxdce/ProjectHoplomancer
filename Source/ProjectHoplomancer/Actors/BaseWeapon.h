@@ -155,6 +155,11 @@ public:
 
 	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
 
+	// ^^^
+	// Might be wise to remove the "Parent" parameter from the attack functions soon,
+	// since having the "Wielder" member variable makes it redundant!
+
+
 	virtual float GetNextFireTime();
 
 	virtual void SetNextFireTime(double Time);

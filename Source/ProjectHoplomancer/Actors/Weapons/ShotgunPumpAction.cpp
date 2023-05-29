@@ -49,7 +49,7 @@ void AShotgunPumpAction::Tick(float DeltaTime)
 void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 	UWorld* World = GetWorld();
-	// Basic check for valid world + can't fire faster than weapon firerate + can't fire while reloading.
+	// Basic check for valid wielder + valid world + can't fire faster than weapon firerate + can't fire while reloading.
 	if (!Parent || !World || World->GetTimeSeconds() < NextFireTime || IsReloading)
 	{
 		return;
@@ -104,7 +104,7 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 				Projectile->FireInDirection(CurrentLaunchDirection.Vector());
 
 				//FVector traceStart = MuzzleLocation;
-				//FVector traceEnd = MuzzleLocation + MuzzleRotation.Vector() * 100000.0f;
+				//FVector traceEnd = MuzzleLocation + CurrentLaunchDirection.Vector() * 100000.0f;
 
 				//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 5.0f, 0, 2.0f);
 			}
@@ -115,17 +115,21 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 			ApplyRecoil();
 			ReceiveWeaponFire(Parent, MuzzleLocation);
 			OnWeaponFire.Broadcast(Parent, MuzzleLocation);
+			APawn* soundMaker = Cast<APawn>(Parent);
+			if (soundMaker != nullptr)
+			{
+				MakeNoise(1.0, soundMaker, GetActorLocation(), 50000.0f);
+			}
+			if (SoundPrimaryAttack)
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
+			}
 		}
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
 		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
 		ReservoirCurrRoundCount--;
 		TotalAmmoCount--;
-
-		if (SoundPrimaryAttack)
-		{
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
-		}
 	}
 }
 

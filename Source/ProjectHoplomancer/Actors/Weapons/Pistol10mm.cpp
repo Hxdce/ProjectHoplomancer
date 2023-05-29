@@ -48,7 +48,7 @@ void APistol10mm::Tick(float DeltaTime)
 void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 	UWorld* World = GetWorld();
-	// Basic check for valid world + can't fire faster than weapon firerate + can't fire while reloading.
+	// Basic check for valid wielder + valid world + can't fire faster than weapon firerate + can't fire while reloading.
 	if (!Parent || !World || World->GetTimeSeconds() < NextFireTime || IsReloading)
 	{
 		return;
@@ -71,10 +71,12 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			SP.Instigator = SP.Owner->GetInstigator();
 		}
 
+		bool fired = false;
 
 		ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleRotation, SP);
 		if (Projectile)
 		{
+			fired = true;
 			// Set up projectile properties here? (Might be better to make this its own separate function, or distinct ammo type classes!)
 			Projectile->ProjectileFirer = SP.Owner->GetInstigatorController();
 			Projectile->MovementComponent->InitialSpeed = ProjectileVelocity;
@@ -85,26 +87,32 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Projectile->FireInDirection(LaunchDirection);
 
-			ApplyRecoil();
-
-			ReceiveWeaponFire(Parent, MuzzleLocation);
-			OnWeaponFire.Broadcast(Parent, MuzzleLocation);
-
 			//FVector traceStart = MuzzleLocation;
 			//FVector traceEnd = MuzzleLocation + MuzzleRotation.Vector() * 100000.0f;
 
 			//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 5.0f, 0, 2.0f);
 		}
 
+		if (fired)
+		{
+			ApplyRecoil();
+			ReceiveWeaponFire(Parent, MuzzleLocation);
+			OnWeaponFire.Broadcast(Parent, MuzzleLocation);
+			APawn* soundMaker = Cast<APawn>(Parent);
+			if (soundMaker != nullptr)
+			{
+				MakeNoise(1.0, soundMaker, GetActorLocation(), 50000.0f);
+			}
+			if (SoundPrimaryAttack)
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
+			}
+		}
+
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
 		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
 		ReservoirCurrRoundCount--;
 		TotalAmmoCount--;
-
-		if (SoundPrimaryAttack)
-		{
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
-		}
 	}
 }
 
