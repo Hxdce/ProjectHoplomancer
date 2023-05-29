@@ -15,7 +15,8 @@ AShotgunPumpAction::AShotgunPumpAction()
 	PrintName = "Pump-Action Shotgun";
 	DamagePrimary = 7.0f;
 	ProjectileCount = 8;
-	Firerate = 1.5f;
+	WeaponSpread = 5.0;
+	Firerate = 1.15f;
 	ProjectileVelocity = 10000.0f;
 	RecoilPitchMin = 4.0f;
 	RecoilPitchMax = 5.0f;
@@ -87,26 +88,12 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 				Projectile->DamageValue = DamagePrimary;
 
 				// Set the projectile's initial rotation.
-				FRotator CurrentLaunchDirection = MuzzleRotation;
+				FRotator FiringDirection = MuzzleRotation;
+				// Randomize projectile directions for shotgun cone of fire.
+				AddSpreadToProjectile(&FiringDirection);
+				// Fire the projectile.
+				Projectile->FireInDirection(FiringDirection.Vector());
 
-				// Randomize projectile directions for shotgun spread.
-				// The projectile spread value from the player's POV represents the diameter of a circle in degrees.
-				// Create a random polar coordinate within half of the max spread (that circle's radius), then
-				// convert it to cartesian coordinates for the random pitch and yaw change.
-				double r = FMath::RandRange(0.0, 3.0);
-				double theta = FMath::RandRange(0.0, 360.0);
-				double x = r * FMath::Cos(theta);
-				double y = r * FMath::Sin(theta);
-				CurrentLaunchDirection.Pitch += x;
-				CurrentLaunchDirection.Yaw += y;
-
-				// Randomize projectile directions for shotgun spread.
-				Projectile->FireInDirection(CurrentLaunchDirection.Vector());
-
-				//FVector traceStart = MuzzleLocation;
-				//FVector traceEnd = MuzzleLocation + CurrentLaunchDirection.Vector() * 100000.0f;
-
-				//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 5.0f, 0, 2.0f);
 			}
 		}
 

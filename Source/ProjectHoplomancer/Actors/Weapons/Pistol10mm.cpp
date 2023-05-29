@@ -14,6 +14,7 @@ APistol10mm::APistol10mm()
 	// Default values for weapon stats:
 	PrintName = "10mm Pistol";
 	DamagePrimary = 20.0f;
+	WeaponSpread = 0.5;
 	Firerate = 0.33333f;
 	ProjectileVelocity = 10000.0f;
 	RecoilPitchMin = 2.0f;
@@ -84,8 +85,11 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			Projectile->DamageValue = DamagePrimary;
 
 			// Set the projectile's initial trajectory.
-			FVector LaunchDirection = MuzzleRotation.Vector();
-			Projectile->FireInDirection(LaunchDirection);
+			FRotator FiringDirection = MuzzleRotation;
+			// Randomize projectile direction for weapon's cone of fire.
+			AddSpreadToProjectile(&FiringDirection);
+			// Fire the projectile.
+			Projectile->FireInDirection(FiringDirection.Vector());
 
 			//FVector traceStart = MuzzleLocation;
 			//FVector traceEnd = MuzzleLocation + MuzzleRotation.Vector() * 100000.0f;

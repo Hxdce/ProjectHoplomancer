@@ -91,6 +91,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float DamageSecondary;
 
+	// Spread value for the fired projectile(s). This is the best possible accuracy this weapon can achieve.
+	// Represents the diameter of the cone of fire from the player's POV, in degrees.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	double WeaponSpread;
+
 	// Variable for the weapon's fire rate.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float Firerate;
@@ -159,6 +164,9 @@ public:
 	// Might be wise to remove the "Parent" parameter from the attack functions soon,
 	// since having the "Wielder" member variable makes it redundant!
 
+	// This is used to add random spread to a fired projectile, creating the weapon's cone of fire.
+	// The member variable "WeaponSpread" defines the diameter of this cone from the player's POV in degrees.
+	virtual void AddSpreadToProjectile(FRotator* MuzzleRotation);
 
 	virtual float GetNextFireTime();
 

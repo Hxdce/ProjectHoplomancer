@@ -99,6 +99,20 @@ void ABaseWeapon::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotat
 }
 
 
+void ABaseWeapon::AddSpreadToProjectile(FRotator* MuzzleRotation)
+{
+	// The projectile spread value from the player's POV represents the diameter of a circle in degrees.
+	// This creates a random polar coordinate within half of the max spread (that circle's radius), converts
+	// it to cartesian coordinates, then applies it to the rotator for the random pitch and yaw change.
+	double r = FMath::RandRange(0.0, WeaponSpread/2);
+	double theta = FMath::RandRange(0.0, 360.0);
+	double x = r * FMath::Cos(theta);
+	double y = r * FMath::Sin(theta);
+	MuzzleRotation->Pitch += x;
+	MuzzleRotation->Yaw += y;
+}
+
+
 float ABaseWeapon::GetNextFireTime()
 {
 	return NextFireTime;
