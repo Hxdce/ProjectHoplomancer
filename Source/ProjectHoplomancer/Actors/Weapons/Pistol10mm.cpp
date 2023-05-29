@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "../Weapons/Pistol10mm.h"
+#include "./Pistol10mm.h"
 
 
 // Sets default values.
@@ -27,6 +27,7 @@ APistol10mm::APistol10mm()
 	AmmoType = AMMO_10MM;
 	AmmoMax = 132;
 }
+
 
 // Called when the game starts or when spawned.
 void APistol10mm::BeginPlay()
@@ -62,7 +63,7 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 	}
 
 	if (WeaponProjectile)
-	{		
+	{
 		FActorSpawnParameters SP;
 		SP.Owner = Parent;
 		if (SP.Owner != nullptr)
