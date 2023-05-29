@@ -96,6 +96,17 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 
 			}
 		}
+		
+		/*
+		FVector traceStart = MuzzleLocation;
+		FVector traceEnd = MuzzleLocation + MuzzleRotation.Vector() * 100000.0f;
+
+		//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 5.0f, 0, 2.0f);
+		float coneW = FMath::DegreesToRadians(WeaponSpread/2.0);
+		float coneH = coneW;
+		DrawDebugCone(GetWorld(), traceStart, traceEnd, 100000.0f, coneW, coneH, 32, FColor::Red, false, 5.0f);
+		*/
+		
 
 		if (fired)
 		{
