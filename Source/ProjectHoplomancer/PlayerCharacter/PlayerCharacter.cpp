@@ -226,20 +226,11 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 // For calculating where projectiles originate from and what direction they should face.
 void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation)
 {
-	FVector CameraLocation;
-	FRotator CameraRotation;
-	GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-	FVector f = PlayerCamera->GetRelativeLocation();
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Camera: %f %f %f"), f.X, f.Y, f.Z));
-	// Set MuzzleOffset to spawn projectiles where the camera is located, accounting for offset when crouching.
-	MuzzleOffset.Set(0.0f, 0.0f, f.Z - BaseEyeHeight);
-
-	// Transform MuzzleOffset from camera space to world space.
-	*OutMuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+	// Camera location is the actor's location + the camera's current location relative to its parent.
+	*OutMuzzleLocation = GetActorLocation() + PlayerCamera->GetRelativeLocation();  // + FTransform(CameraRotation).TransformVector(MuzzleOffset);
 
 	// Get the camera rotation as the muzzle rotation.
-	*OutMuzzleRotation = CameraRotation;
+	*OutMuzzleRotation = GetViewRotation();
 }
 
 
