@@ -74,6 +74,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
 	USoundBase* SoundPrimaryAttack;
 
+	// Dry fire SFX.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
+	USoundBase* SoundDryFire;
+
 	// Finish reload SFX.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
 	USoundBase* SoundFinishReload;

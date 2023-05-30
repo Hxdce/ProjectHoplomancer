@@ -54,16 +54,15 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 	{
 		return;
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Invoking 10mm pistol primary attack!"));
 	if (ReservoirCurrRoundCount <= 0)
 	{
-		// Should dry fire here, then reload if we have ammo.
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Weapon is empty! Click!"));
-		NextFireTime = GetWorld()->GetTimeSeconds() + 0.5f;
-		return;
+		// No ammo in gun.
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Weapon is empty!"));
 	}
 
-	if (WeaponProjectile)
+	bool fired = false;
+
+	if (WeaponProjectile && ReservoirCurrRoundCount > 0)
 	{
 		FActorSpawnParameters SP;
 		SP.Owner = Parent;
@@ -71,8 +70,6 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 		{
 			SP.Instigator = SP.Owner->GetInstigator();
 		}
-
-		bool fired = false;
 
 		ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleRotation, SP);
 		if (Projectile)
@@ -96,27 +93,30 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 
 			//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 5.0f, 0, 2.0f);
 		}
+	}
 
-		if (fired)
+	if (fired)
+	{
+		ApplyRecoil();
+		ReceiveWeaponFire(Parent, MuzzleLocation);
+		OnWeaponFire.Broadcast(Parent, MuzzleLocation);
+		APawn* soundMaker = Cast<APawn>(Parent);
+		if (soundMaker != nullptr)
 		{
-			ApplyRecoil();
-			ReceiveWeaponFire(Parent, MuzzleLocation);
-			OnWeaponFire.Broadcast(Parent, MuzzleLocation);
-			APawn* soundMaker = Cast<APawn>(Parent);
-			if (soundMaker != nullptr)
-			{
-				MakeNoise(1.0, soundMaker, GetActorLocation(), 50000.0f);
-			}
-			if (SoundPrimaryAttack)
-			{
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
-			}
+			MakeNoise(1.0, soundMaker, GetActorLocation(), 50000.0f);
 		}
-
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Bang!"));
+		if (SoundPrimaryAttack)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
+		}
 		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
 		ReservoirCurrRoundCount--;
 		TotalAmmoCount--;
+	}
+	else
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundDryFire, GetActorLocation(), FRotator::ZeroRotator);
+		NextFireTime = GetWorld()->GetTimeSeconds() + 0.5;
 	}
 }
 
