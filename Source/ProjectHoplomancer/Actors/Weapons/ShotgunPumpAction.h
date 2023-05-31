@@ -24,16 +24,34 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Shell insert SFX.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
+	USoundBase* SoundInsertShell;
+
 public:
 	// Variable for the number of projectiles the weapon fires.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	int ProjectileCount;
 
+
+	// Overridden built-in UE5 class functions:
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
+	// Proprietary functions below:
 
 	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
 
 	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
 
+	virtual void ReloadStart() override;
+
+	virtual void ReloadFinish() override;
+
+
+	// Proprietary functions below:
+
+	virtual void ReloadInsertShell();
 };

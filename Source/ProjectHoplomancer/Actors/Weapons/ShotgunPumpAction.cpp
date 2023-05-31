@@ -3,6 +3,8 @@
 
 #include "./ShotgunPumpAction.h"
 
+#include "../../PlayerCharacter/PlayerCharacter.h"
+
 
 // Sets default values.
 AShotgunPumpAction::AShotgunPumpAction()
@@ -18,6 +20,8 @@ AShotgunPumpAction::AShotgunPumpAction()
 	WeaponSpread = 5.0;
 	Firerate = 1.15f;
 	ProjectileVelocity = 10000.0f;
+	ReloadDuration = 0.5f;
+	ReloadFireDelayTime = 1.1f;  // Since the firing and pumping are currently combined into one, this needs to pretty long!
 	RecoilPitchMin = 4.0f;
 	RecoilPitchMax = 5.0f;
 	RecoilYawMin = -1.5f;
@@ -42,7 +46,6 @@ void AShotgunPumpAction::BeginPlay()
 void AShotgunPumpAction::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 
@@ -120,6 +123,7 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 		{
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
 		}
+		TimeCanReload = GetWorld()->GetTimeSeconds() + ReloadFireDelayTime;
 		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
 		ReservoirCurrRoundCount--;
 		TotalAmmoCount--;
@@ -127,6 +131,7 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 	else
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundDryFire, GetActorLocation(), FRotator::ZeroRotator);
+		TimeCanReload = GetWorld()->GetTimeSeconds() + 0.1;
 		NextFireTime = GetWorld()->GetTimeSeconds() + 0.5;
 	}
 }
@@ -136,4 +141,75 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 void AShotgunPumpAction::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 
+}
+
+
+void AShotgunPumpAction::ReloadStart()
+{
+	if (TimeCanReload > GetWorld()->GetTimeSeconds())
+	{
+		QueuedReload = true;
+		return;
+	}
+	else
+	{
+		QueuedReload = false;
+	}
+
+	int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
+	if (ReservoirCurrRoundCount < ReservoirMax && roundsAvailable > 0 && !IsReloading)
+	{
+		IsReloading = true;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
+		// Set timed function for inserting a shell.
+		FTimerManager* TimerMgr = &GetWorld()->GetTimerManager();
+		FTimerHandle handleReload;
+		TimerMgr->SetTimer(handleReload, this, &AShotgunPumpAction::ReloadInsertShell, ReloadDuration/2, false);
+	}
+}
+
+
+void AShotgunPumpAction::ReloadFinish()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finished reloading!"));
+	IsReloading = false;
+}
+
+
+void AShotgunPumpAction::ReloadInsertShell()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
+	if (player == nullptr || !player->IsAlive)
+	{
+		IsReloading = false;
+		return;
+	}
+
+	int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
+	bool continueReload = false;
+
+	if (ReservoirCurrRoundCount < ReservoirMax && roundsAvailable > 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Inserting Shell!"));
+		ReservoirCurrRoundCount += 1;
+		if (SoundInsertShell)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundInsertShell , GetActorLocation(), FRotator::ZeroRotator);
+		}
+		continueReload = ReservoirCurrRoundCount < ReservoirMax && roundsAvailable > 0;
+	}
+
+	FTimerManager* TimerMgr = &GetWorld()->GetTimerManager();
+	if (continueReload)
+	{
+		// Set timed function for inserting the next shell.
+		FTimerHandle handleReload;
+		TimerMgr->SetTimer(handleReload, this, &AShotgunPumpAction::ReloadInsertShell, ReloadDuration, false);
+	}
+	else
+	{
+		// Set timed function for finishing the reload.
+		FTimerHandle finishReload;
+		TimerMgr->SetTimer(finishReload, this, &AShotgunPumpAction::ReloadFinish, 0.15f, false);
+	}
 }
