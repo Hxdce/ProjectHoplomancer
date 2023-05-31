@@ -82,11 +82,11 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			Projectile->DamageValue = DamagePrimary;
 
 			// Set the projectile's initial trajectory.
-			FRotator FiringDirection = MuzzleRotation;
+			FVector FiringDirection = MuzzleRotation.Vector();
 			// Randomize projectile direction for weapon's cone of fire.
 			AddSpreadToProjectile(&FiringDirection);
 			// Fire the projectile.
-			Projectile->FireInDirection(FiringDirection.Vector());
+			Projectile->FireInDirection(FiringDirection);
 
 			//FVector traceStart = MuzzleLocation;
 			//FVector traceEnd = MuzzleLocation + MuzzleRotation.Vector() * 100000.0f;

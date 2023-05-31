@@ -170,7 +170,7 @@ public:
 
 	// This is used to add random spread to a fired projectile, creating the weapon's cone of fire.
 	// The member variable "WeaponSpread" defines the diameter of this cone from the player's POV in degrees.
-	virtual void AddSpreadToProjectile(FRotator* MuzzleRotation);
+	virtual void AddSpreadToProjectile(FVector* FiringDirection);
 
 	virtual float GetNextFireTime();
 

@@ -4,6 +4,7 @@
 #include "../Actors/BaseWeapon.h"
 
 #include "../PlayerCharacter/PlayerCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
@@ -99,17 +100,14 @@ void ABaseWeapon::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotat
 }
 
 
-void ABaseWeapon::AddSpreadToProjectile(FRotator* MuzzleRotation)
+void ABaseWeapon::AddSpreadToProjectile(FVector* FiringDirection)
 {
-	// The projectile spread value from the player's POV represents the diameter of a circle in degrees.
-	// This creates a random polar coordinate within half of the max spread (that circle's radius), converts
-	// it to cartesian coordinates, then applies it to the rotator for the random pitch and yaw change.
-	double r = FMath::RandRange(0.0, WeaponSpread/2);
-	double theta = FMath::RandRange(0.0, 360.0);
-	double x = r * FMath::Cos(theta);
-	double y = r * FMath::Sin(theta);
-	MuzzleRotation->Pitch += x;
-	MuzzleRotation->Yaw += y;
+	// From the player's POV, a weapon's random spread is seen as a distribution within the frustum of a cone,
+	// which is basically a circle. The diameter of this circle is represented in degrees with WeaponSpread.
+	// We simply pick a random vector within this cone frustum to create spread. WeaponSpread/2 is its radius.
+	
+	// Turns out Unreal Engine has a built in function for this that works flawlessly. How convenient!
+	(*FiringDirection) = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(*FiringDirection, WeaponSpread/2);
 }
 
 

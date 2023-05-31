@@ -75,7 +75,11 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 		// Create and fire off the shotgun pellets.
 		for (int i = 0; i < ProjectileCount; i++)
 		{
-			ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleRotation, SP);
+			// Set the projectile's initial rotation.
+			FVector FiringDirection = MuzzleRotation.Vector();
+			// Randomize projectile directions for shotgun cone of fire.
+			AddSpreadToProjectile(&FiringDirection);
+			ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, FiringDirection.Rotation(), SP);
 			if (Projectile)
 			{
 				fired = true;
@@ -85,12 +89,8 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 				Projectile->MovementComponent->MaxSpeed = ProjectileVelocity;
 				Projectile->DamageValue = DamagePrimary;
 
-				// Set the projectile's initial rotation.
-				FRotator FiringDirection = MuzzleRotation;
-				// Randomize projectile directions for shotgun cone of fire.
-				AddSpreadToProjectile(&FiringDirection);
 				// Fire the projectile.
-				Projectile->FireInDirection(FiringDirection.Vector());
+				Projectile->FireInDirection(FiringDirection);
 
 			}
 		}
