@@ -9,7 +9,8 @@ APistol10mm::APistol10mm()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	NextFireTime = -99.0f;
+	NextFireTime = -99.0;
+	TimeCanReload = -99.0;
 
 	// Default values for weapon stats:
 	PrintName = "10mm Pistol";
@@ -109,6 +110,8 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 		{
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPrimaryAttack, GetActorLocation(), FRotator::ZeroRotator);
 		}
+
+		TimeCanReload = GetWorld()->GetTimeSeconds() + ReloadFireDelayTime;
 		NextFireTime = GetWorld()->GetTimeSeconds() + Firerate;
 		ReservoirCurrRoundCount--;
 		TotalAmmoCount--;
@@ -116,6 +119,7 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 	else
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundDryFire, GetActorLocation(), FRotator::ZeroRotator);
+		TimeCanReload = GetWorld()->GetTimeSeconds() + 0.1;
 		NextFireTime = GetWorld()->GetTimeSeconds() + 0.5;
 	}
 }

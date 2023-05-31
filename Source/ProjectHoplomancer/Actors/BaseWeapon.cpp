@@ -6,6 +6,7 @@
 #include "../PlayerCharacter/PlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 
+
 // Sets default values
 ABaseWeapon::ABaseWeapon()
 {
@@ -37,6 +38,7 @@ ABaseWeapon::ABaseWeapon()
 	Firerate = 0.5;
 	ProjectileVelocity = 5000.0;
 	ReloadDuration = 1.0;
+	ReloadFireDelayTime = 0.25;
 	RecoilPitchMin = 0.0;
 	RecoilPitchMax = 0.0;
 	RecoilYawMin = 0.0;
@@ -62,6 +64,10 @@ void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (QueuedReload)
+	{
+		ReloadStart();
+	}
 }
 
 
@@ -148,8 +154,18 @@ void ABaseWeapon::SetWielder(ACharacter* NewWielder)
 }
 
 
-void ABaseWeapon::ReloadWeapon(bool EmptyReload)
+void ABaseWeapon::ReloadStart()
 {
+	if (TimeCanReload > GetWorld()->GetTimeSeconds())
+	{
+		QueuedReload = true;
+		return;
+	}
+	else
+	{
+		QueuedReload = false;
+	}
+
 	int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
 	if (ReservoirCurrRoundCount < ReservoirMax && roundsAvailable > 0 && !IsReloading)
 	{
@@ -169,6 +185,7 @@ void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 			TimerMgr->SetTimer(handleSoundFinishReload, this, &ABaseWeapon::DevReloadFinishSound, playTime, false);
 		}
 	}
+	/*
 	else if (ReservoirCurrRoundCount == ReservoirMax)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Don't need to reload!"));
@@ -177,6 +194,7 @@ void ABaseWeapon::ReloadWeapon(bool EmptyReload)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("No extra ammo!"));
 	}
+	*/
 }
 
 

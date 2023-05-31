@@ -57,6 +57,12 @@ protected:
 	// Next time this weapon can fire.
 	double NextFireTime;
 
+	// Time this weapon can reload. Prevents reloading in the middle of firing.
+	double TimeCanReload;
+
+	// Whether a reload is queued or not. This typically happens when trying to reload while firing.
+	bool QueuedReload;
+
 	// Variable for the amount of ammo in the weapon's reservoir (magazine, cylinder, hopper, etc).
 	int ReservoirCurrRoundCount;
 
@@ -111,6 +117,10 @@ public:
 	// Variable for how long the weapon takes to reload.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	float ReloadDuration;
+
+	// Delay time for reloading after firing.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	float ReloadFireDelayTime;
 
 	// Variable for the minimum vertical recoil of the weapon.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
@@ -184,7 +194,7 @@ public:
 
 	virtual void SetWielder(ACharacter* NewWielder);
 
-	virtual void ReloadWeapon(bool EmptyReload = false);
+	virtual void ReloadStart();
 
 	virtual void ReloadFinish();
 
