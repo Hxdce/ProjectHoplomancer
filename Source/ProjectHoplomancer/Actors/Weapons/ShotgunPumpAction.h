@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponSounds)
 	USoundBase* SoundInsertShell;
 
+	// Whether firing is queued or not. This will stop other actions like reloading.
+	bool QueuedFiring;
+
 public:
 	// Variable for the number of projectiles the weapon fires.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)

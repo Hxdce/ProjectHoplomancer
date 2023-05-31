@@ -56,6 +56,10 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 	// Basic check for valid wielder + valid world + can't fire faster than weapon firerate + can't fire while reloading.
 	if (!Parent || !World || World->GetTimeSeconds() < NextFireTime || IsReloading)
 	{
+		if (IsReloading && ReservoirCurrRoundCount > 0)
+		{
+			QueuedFiring = true;
+		}
 		return;
 	}
 	if (ReservoirCurrRoundCount <= 0)
@@ -86,6 +90,7 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 			if (Projectile)
 			{
 				fired = true;
+				QueuedFiring = false;
 				// Set up projectile properties here? (Might be better to make this its own separate function, or distinct ammo type classes!)
 				Projectile->ProjectileFirer = SP.Owner->GetInstigatorController();
 				Projectile->MovementComponent->InitialSpeed = ProjectileVelocity;
@@ -146,6 +151,15 @@ void AShotgunPumpAction::SecondaryAttack(AActor* Parent, FVector MuzzleLocation,
 
 void AShotgunPumpAction::ReloadStart()
 {
+	if (QueuedFiring)  // Just make this interrupt reloading for now, no firing.
+	{
+		QueuedReload = false;
+		QueuedFiring = false;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Interrupting reloading!"));
+		IsReloading = false;
+		return;
+	}
+
 	if (TimeCanReload > GetWorld()->GetTimeSeconds())
 	{
 		QueuedReload = true;
@@ -181,6 +195,15 @@ void AShotgunPumpAction::ReloadInsertShell()
 	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
 	if (player == nullptr || !player->IsAlive)
 	{
+		IsReloading = false;
+		return;
+	}
+
+	if (QueuedFiring)  // Just make this interrupt reloading for now, no firing.
+	{
+		QueuedReload = false;
+		QueuedFiring = false;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Interrupting reloading!"));
 		IsReloading = false;
 		return;
 	}
