@@ -73,6 +73,9 @@ protected:
 	// Boolean for whether the weapon is reloading or not.
 	bool IsReloading;
 
+	// Boolean for whether the weapon is equipped or not.
+	bool IsEquipped;
+
 	// Character wielding the weapon.
 	ACharacter* Wielder;
 
@@ -170,8 +173,17 @@ public:
 
 	// Proprietary functions:
 
+
+	// Equip this weapon.
+	virtual void Equip();
+
+	// Unequip this weapon. This cancels any actions the weapon is currently doing, e.g. reloading.
+	virtual void Unequip();
+
+	// Primary attack function.
 	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
 
+	// Secondary attack function.
 	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
 
 	// ^^^
@@ -182,16 +194,22 @@ public:
 	// The member variable "WeaponSpread" defines the diameter of this cone from the player's POV in degrees.
 	virtual void AddSpreadToProjectile(FVector* FiringDirection);
 
+	// Get next time we can fire.
 	virtual float GetNextFireTime();
 
+	// Set next time we can fire.
 	virtual void SetNextFireTime(double Time);
 
+	// Get whether the third person mesh is visible or not.
 	virtual bool GetThirdPersonMeshVisibility();
 
+	// Set whether the third person mesh is visible or not.
 	virtual void SetThirdPersonMeshVisibility(bool Vis);
 
+	// Get the wielder of this weapon.
 	virtual ACharacter* GetWielder();
 
+	// Set the wielder of this weapon.
 	virtual void SetWielder(ACharacter* NewWielder);
 
 	virtual void ReloadStart();

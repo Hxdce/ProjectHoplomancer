@@ -151,6 +151,11 @@ void AShotgunPumpAction::SecondaryAttack(AActor* Parent, FVector MuzzleLocation,
 
 void AShotgunPumpAction::ReloadStart()
 {
+	if (!IsEquipped)
+	{
+		return;
+	}
+
 	if (QueuedFiring)  // Just make this interrupt reloading for now, no firing.
 	{
 		QueuedReload = false;
@@ -185,6 +190,11 @@ void AShotgunPumpAction::ReloadStart()
 
 void AShotgunPumpAction::ReloadFinish()
 {
+	if (!IsEquipped)
+	{
+		return;
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finished reloading!"));
 	IsReloading = false;
 }
@@ -193,7 +203,7 @@ void AShotgunPumpAction::ReloadFinish()
 void AShotgunPumpAction::ReloadInsertShell()
 {
 	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
-	if (player == nullptr || !player->IsAlive)
+	if (player == nullptr || !player->IsAlive || !IsEquipped)
 	{
 		IsReloading = false;
 		return;

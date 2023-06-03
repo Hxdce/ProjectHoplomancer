@@ -94,6 +94,22 @@ void ABaseWeapon::NotifyActorEndOverlap(AActor* OtherActor)
 }
 
 
+void ABaseWeapon::Equip()
+{
+	IsEquipped = true;
+	// Will eventually make this tied to the draw animation length or whatever...
+	SetNextFireTime(GetWorld()->GetTimeSeconds() + 0.25);
+}
+
+
+void ABaseWeapon::Unequip()
+{
+	IsReloading = false;  // Cancel reloading.
+	QueuedReload = false;  // Cancel queued reloading.
+	IsEquipped = false;
+}
+
+
 void ABaseWeapon::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
 {
 	ReceiveWeaponFire(Parent, MuzzleLocation);
@@ -156,6 +172,11 @@ void ABaseWeapon::SetWielder(ACharacter* NewWielder)
 
 void ABaseWeapon::ReloadStart()
 {
+	if (!IsEquipped)
+	{
+		return;
+	}
+
 	if (TimeCanReload > GetWorld()->GetTimeSeconds())
 	{
 		QueuedReload = true;
@@ -201,23 +222,31 @@ void ABaseWeapon::ReloadStart()
 void ABaseWeapon::ReloadFinish()
 {
 	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
-	if (player != nullptr && player->IsAlive)
+	if (player == nullptr || !player->IsAlive || !IsEquipped)
 	{
-		// Might be wise to make the weapon binded to the OnPlayerDeath delegate soon,
-		// then a function for cancelling the reload can just be invoked through that.
-
-		int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
-		int roundsNeeded = ReservoirMax - ReservoirCurrRoundCount;  // How many rounds are needed to fully reload.
-		// Add the rounds needed if we got enough to fully fill the gun up, or just add the rest we have left.
-		ReservoirCurrRoundCount += FMath::Min(roundsAvailable, roundsNeeded);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finished reloading!"));
+		IsReloading = false;
+		return;
 	}
+
+	// Might be wise to make the weapon binded to the OnPlayerDeath delegate soon,
+	// then a function for cancelling the reload can just be invoked through that.
+
+	int roundsAvailable = TotalAmmoCount - ReservoirCurrRoundCount;  // How many rounds are actually available.
+	int roundsNeeded = ReservoirMax - ReservoirCurrRoundCount;  // How many rounds are needed to fully reload.
+	// Add the rounds needed if we got enough to fully fill the gun up, or just add the rest we have left.
+	ReservoirCurrRoundCount += FMath::Min(roundsAvailable, roundsNeeded);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finished reloading!"));
 	IsReloading = false;
 }
 
 
 void ABaseWeapon::DevReloadFinishSound()
 {
+	if (!IsEquipped)
+	{
+		return;
+	}
+
 	if (SoundFinishReload)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundFinishReload, GetActorLocation(), FRotator::ZeroRotator);

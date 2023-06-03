@@ -179,12 +179,16 @@ bool APlayerCharacter::SwitchToWeapon(int wpnIndex)
 {
 	
 	bool switchedSuccessfully = false;
-	//CurrWeapon = nullptr;
 	if (IsAlive && !Weapons.IsEmpty() && wpnIndex < Weapons.Num())
 	{
-		CurrWeapon = Weapons[wpnIndex];
+		if (CurrWeapon != nullptr)  // Already have a weapon equipped. Unequip it.
+		{
+			CurrWeapon->Unequip();
+		}
+		CurrWeapon = Weapons[wpnIndex];  // Switch out the pointer with the new one at the given index.
 		if (CurrWeapon != nullptr)
 		{
+			CurrWeapon->Equip();
 			CurrWeapon->SetWielder(this);
 			switchedSuccessfully = true;
 		}
