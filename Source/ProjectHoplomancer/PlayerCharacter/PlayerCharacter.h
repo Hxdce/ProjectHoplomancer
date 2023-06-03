@@ -23,6 +23,7 @@
 class UInputMappingContext;
 class UInputAction;
 class ABaseWeapon;
+class UEnhancedInputLocalPlayerSubsystem;
 
 
 // Custom delegate signatures:
@@ -59,7 +60,7 @@ protected:
 	// Stuff for player controls:
 
 	UPROPERTY(EditAnywhere, Category=Input)
-	UInputMappingContext* PlayerCharacterContext;
+	UInputMappingContext* PlayerInputMappingContext;
 
 	UPROPERTY(EditAnywhere, Category=Input)
 	UInputAction* MovementAction;
@@ -80,8 +81,14 @@ protected:
 	UInputAction* SecondaryAttackAction;
 
 	UPROPERTY(EditAnywhere, Category=Input)
+	UInputAction* SelectWeaponAction;
+
+	UPROPERTY(EditAnywhere, Category=Input)
 	UInputAction* ReloadAction;
 	
+	// Enhanced Input Subsystem:
+	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem;
+
 	// ---------
 	
 
@@ -116,6 +123,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void PrimaryAttack(const FInputActionValue& Value);
 	void SecondaryAttack(const FInputActionValue& Value);
+	void SelectWeapon(const FInputActionValue& Value);
 	void ReloadWeapon(const FInputActionValue& Value);
 	void CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation);
 	void DecayCameraRecoilRotation(float DeltaTime);
@@ -158,6 +166,9 @@ public:
 
 	// Function to handle picking up a weapon.
 	bool TakeWeapon(ABaseWeapon* wpn);
+
+	// Function to switch to a weapon.
+	bool SwitchToWeapon(int wpnIndex);
 
 	// Function for applying camera recoil effects.
 	void CameraApplyRecoil(FRotator RecoilRotator, double Snappiness=0.0);

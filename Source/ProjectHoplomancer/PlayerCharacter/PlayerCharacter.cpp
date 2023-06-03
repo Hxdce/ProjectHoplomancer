@@ -6,6 +6,7 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
 
 #include "../ProjectHoplomancerGameModeBase.h"
 #include "../Actors/BaseWeapon.h"
@@ -47,18 +48,19 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (APlayerController* playerController = Cast<APlayerController>(Controller))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(PlayerCharacterContext, 0);
+			EnhancedInputSubsystem = subsystem;
+			EnhancedInputSubsystem->AddMappingContext(PlayerInputMappingContext, 0);
 		}
 	}
 
 	check(GEngine != nullptr);
 	// Display a debug message for five seconds. 
 	// The -1 "Key" value argument prevents the message from being updated or refreshed.
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Using PlayerCharacter class."));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Using PlayerCharacter class."));
 }
 
 
@@ -72,7 +74,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	DecayCameraRecoilRotation(DeltaTime);
 
-	APlayerController* pc = GetLocalViewingPlayerController();
+	APlayerController* pc = Cast<APlayerController>(Controller);
 	if (pc != nullptr)
 	{
 		if (CameraRotMod.Pitch > CameraRotMaxPitchChange)
@@ -99,6 +101,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump);
 		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::PrimaryAttack);
 		EnhancedInputComponent->BindAction(SecondaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SecondaryAttack);
+		EnhancedInputComponent->BindAction(SelectWeaponAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SelectWeapon);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ReloadWeapon);
 	}
 
@@ -146,17 +149,57 @@ void APlayerCharacter::AddPhysicsImpulse(FVector ImpulseOrigin, float Magnitude)
 // Function to handle picking up a weapon.
 bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 {
-	CurrWeapon = wpn;
-	if (!IsAlive || CurrWeapon == nullptr)
+	bool tookSuccessfully = false;
+	if (!IsAlive)
 	{
-		// Operation failed somehow.
-		return false;
+		// Can't take anything if you're dead!
+		return tookSuccessfully;
 	}
-	CurrWeapon->SetActorEnableCollision(false);
-	CurrWeapon->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
-	CurrWeapon->SetThirdPersonMeshVisibility(false);
-	CurrWeapon->SetWielder(this);
-	return true;
+
+	if (Weapons.Num() < 3 && Weapons.Find(wpn) == INDEX_NONE)
+	{
+		// Only pick it up if we're not carrying it.
+		// Todo: If we ARE carrying it, take its ammo instead?
+		Weapons.Add(wpn);
+		tookSuccessfully = SwitchToWeapon(Weapons.Num() - 1);
+	}
+
+	if (tookSuccessfully)
+	{
+		// Attach it to the actor, disable collision, and make its third person mesh invisible.
+		wpn->SetActorEnableCollision(false);
+		wpn->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+		wpn->SetThirdPersonMeshVisibility(false);
+	}
+	return tookSuccessfully;
+}
+
+
+bool APlayerCharacter::SwitchToWeapon(int wpnIndex)
+{
+	
+	bool switchedSuccessfully = false;
+	//CurrWeapon = nullptr;
+	if (IsAlive && !Weapons.IsEmpty() && wpnIndex < Weapons.Num())
+	{
+		CurrWeapon = Weapons[wpnIndex];
+		if (CurrWeapon != nullptr)
+		{
+			CurrWeapon->SetWielder(this);
+			switchedSuccessfully = true;
+		}
+	}
+
+	if (switchedSuccessfully)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("CurrWeapon is now %s!"), *CurrWeapon->GetName()));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("CurrWeapon assignment in SwitchToWeapon failed!"));
+	}
+
+	return IsAlive && switchedSuccessfully;
 }
 
 
@@ -297,6 +340,34 @@ void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 	FRotator MuzzleRotation;
 	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
 	CurrWeapon->SecondaryAttack(this, MuzzleLocation, MuzzleRotation);
+}
+
+
+void APlayerCharacter::SelectWeapon(const FInputActionValue& Value)
+{
+	if (EnhancedInputSubsystem == nullptr)
+	{
+		// How???
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Invoking SelectWeapon."));
+
+	APlayerController* pc = Cast<APlayerController>(Controller);
+	TArray<FKey> keys = EnhancedInputSubsystem->QueryKeysMappedToAction(SelectWeaponAction);
+
+	int index = 0;
+	for (FKey key : keys)
+	{
+		if (pc->IsInputKeyDown(key))
+		{
+			FString keyPressed = key.ToString();
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Input key index is %i."), index));
+			SwitchToWeapon(index);
+			break;
+		}
+		index++;
+	}
 }
 
 
