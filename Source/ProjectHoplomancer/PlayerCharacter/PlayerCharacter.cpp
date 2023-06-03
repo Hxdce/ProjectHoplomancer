@@ -156,12 +156,12 @@ bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 		return tookSuccessfully;
 	}
 
-	if (Weapons.Num() < 3 && Weapons.Find(wpn) == INDEX_NONE)
+	if (CarriedWeapons.Num() < 3 && CarriedWeapons.Find(wpn) == INDEX_NONE)
 	{
 		// Only pick it up if we're not carrying it.
 		// Todo: If we ARE carrying it, take its ammo instead?
-		Weapons.Add(wpn);
-		tookSuccessfully = SwitchToWeapon(Weapons.Num() - 1);
+		CarriedWeapons.Add(wpn);
+		tookSuccessfully = SwitchToWeapon(CarriedWeapons.Num() - 1);
 	}
 
 	if (tookSuccessfully)
@@ -179,13 +179,13 @@ bool APlayerCharacter::SwitchToWeapon(int wpnIndex)
 {
 	
 	bool switchedSuccessfully = false;
-	if (IsAlive && !Weapons.IsEmpty() && wpnIndex < Weapons.Num())
+	if (IsAlive && !CarriedWeapons.IsEmpty() && wpnIndex < CarriedWeapons.Num())
 	{
 		if (CurrWeapon != nullptr)  // Already have a weapon equipped. Unequip it.
 		{
 			CurrWeapon->Unequip();
 		}
-		CurrWeapon = Weapons[wpnIndex];  // Switch out the pointer with the new one at the given index.
+		CurrWeapon = CarriedWeapons[wpnIndex];  // Switch out the pointer with the new one at the given index.
 		if (CurrWeapon != nullptr)
 		{
 			CurrWeapon->Equip();
@@ -204,6 +204,12 @@ bool APlayerCharacter::SwitchToWeapon(int wpnIndex)
 	}
 
 	return IsAlive && switchedSuccessfully;
+}
+
+
+TArray<ABaseWeapon*> APlayerCharacter::GetCarriedWeapons()
+{
+	return CarriedWeapons;
 }
 
 

@@ -14,12 +14,14 @@ bool ABaseAmmoItem::HandlePickupItem(APlayerCharacter* PlayerActor)
 	APlayerCharacter* p = PlayerActor;
 	if (p != nullptr && p->IsAlive && AmmoType != AMMO_NULL)
 	{
-		ABaseWeapon* heldWeapon = p->CurrWeapon;
-		// Make this go over all the weapons the player is carrying instead of the one they're actively using!
-		bool notCarryingMaxAmmo = heldWeapon->GetTotalAmmoCount() < heldWeapon->AmmoMax;
-		if (heldWeapon != nullptr && heldWeapon->AmmoType == this->AmmoType && notCarryingMaxAmmo)
+		for (ABaseWeapon* weapon : p->GetCarriedWeapons())
 		{
-			return true;
+			bool notCarryingMaxAmmo = weapon->GetTotalAmmoCount() < weapon->AmmoMax;
+			if (weapon != nullptr && weapon->AmmoType == this->AmmoType && notCarryingMaxAmmo)
+			{
+				TargetWeapon = weapon;
+				return true;
+			}
 		}
 	}
 	return false;
@@ -32,11 +34,10 @@ void ABaseAmmoItem::Activate(APlayerCharacter* PlayerActor)
 	APlayerCharacter* p = PlayerActor;
 	if (p != nullptr && p->IsAlive)
 	{
-		ABaseWeapon* heldWeapon = p->CurrWeapon;
-		if (heldWeapon != nullptr)
+		if (TargetWeapon != nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Adding AmmoAmount's value to %s"), *heldWeapon->PrintName));
-			heldWeapon->GiveAmmo(AmmoAmount);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Adding AmmoAmount's value to %s"), *TargetWeapon->PrintName));
+			TargetWeapon->GiveAmmo(AmmoAmount);
 		}
 	}
 	Super::Activate(PlayerActor);

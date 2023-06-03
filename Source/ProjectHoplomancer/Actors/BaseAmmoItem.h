@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+// Parent class include:
 #include "./BasePickupableItem.h"
 
 // Includes from project code:
@@ -25,6 +26,9 @@ public:
 	using Super = ABasePickupableItem;
 
 protected:
+
+	// The weapon we'll be giving ammo to.
+	ABaseWeapon* TargetWeapon;
 
 public:
 	// The amount of ammo this item has.

@@ -110,8 +110,8 @@ protected:
 	// ---
 	// Other:
 
-	// Weapons the player is carrying.
-	TArray<ABaseWeapon*> Weapons;
+	// Weapons the player is carrying, both equipped and unequipped.
+	TArray<ABaseWeapon*> CarriedWeapons;
 
 	// Gun muzzle offset from the camera location.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -169,6 +169,9 @@ public:
 
 	// Function to switch to a weapon.
 	bool SwitchToWeapon(int wpnIndex);
+
+	// Function for getting all the weapons the player is carrying, equipped or otherwise.
+	TArray<ABaseWeapon*> GetCarriedWeapons();
 
 	// Function for applying camera recoil effects.
 	void CameraApplyRecoil(FRotator RecoilRotator, double Snappiness=0.0);
