@@ -3,6 +3,7 @@
 
 #include "./BaseAmmoItem.h"
 
+#include "./BaseWeapon.h"
 
 ABaseAmmoItem::ABaseAmmoItem()
 {

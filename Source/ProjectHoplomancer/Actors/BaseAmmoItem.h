@@ -7,15 +7,15 @@
 #include "./BasePickupableItem.h"
 
 // Includes from project code:
-#include "./BaseWeapon.h"
 #include "../Enums/WeaponEnums.h"
 
 // This include always comes last:
 #include "BaseAmmoItem.generated.h"
 
-/**
- * 
- */
+
+// Forward declarations:
+class ABaseWeapon;
+
 UCLASS()
 class PROJECTHOPLOMANCER_API ABaseAmmoItem : public ABasePickupableItem
 {
