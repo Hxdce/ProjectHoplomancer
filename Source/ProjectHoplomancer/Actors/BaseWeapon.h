@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Includes from project code:
+#include "../Enums/WeaponEnums.h"
 #include "./BaseProjectile.h"
 #include "../ProjectHoplomancerGameModeBase.h"
 
@@ -21,16 +22,6 @@ class USoundBase;
 
 // Custom delegate signatures:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponFireSignature, class AActor*, Instigator, FVector, Location)
-
-
-// Enum for ammo types.
-UENUM(BlueprintType)
-enum WeaponAmmoTypes {
-	AMMO_NULL,
-	AMMO_10MM,
-	AMMO_12GAUGE,
-	AMMO_57SMG
-};
 
 
 UCLASS()

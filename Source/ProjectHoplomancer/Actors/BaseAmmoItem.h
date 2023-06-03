@@ -8,6 +8,7 @@
 
 // Includes from project code:
 #include "./BaseWeapon.h"
+#include "../Enums/WeaponEnums.h"
 
 // This include always comes last:
 #include "BaseAmmoItem.generated.h"
