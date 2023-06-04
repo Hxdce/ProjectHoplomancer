@@ -1,4 +1,4 @@
-// A 10mm Pistol.
+// © Hxdce, 1994 - Present. Created in 2023. This work is licensed under a CC BY-NC-SA 4.0 license.
 
 #pragma once
 
@@ -8,9 +8,7 @@
 // This include always comes last:
 #include "Pistol10mm.generated.h"
 
-/**
- * 
- */
+// A standard pistol. Fires 10x21mm auto rounds.
 UCLASS()
 class PROJECTHOPLOMANCER_API APistol10mm : public ABaseWeapon
 {

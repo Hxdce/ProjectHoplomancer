@@ -8,9 +8,7 @@
 // This include always comes last:
 #include "ShotgunPumpAction.generated.h"
 
-/**
- * 
- */
+// The Pump-Action Shotgun. Fires 12 gauge 000 magnum buckshot.
 UCLASS()
 class PROJECTHOPLOMANCER_API AShotgunPumpAction : public ABaseWeapon
 {
