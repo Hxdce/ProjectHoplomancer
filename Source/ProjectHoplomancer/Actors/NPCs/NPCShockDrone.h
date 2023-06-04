@@ -1,4 +1,4 @@
-// ï¿½ Hxdce, 1994 - Present. Created in 2023. This work is licensed under a CC BY-NC-SA 4.0 license.
+// © Hxdce, 1994 - Present. Created in 2023. This work is licensed under a CC BY-NC-SA 4.0 license.
 
 #pragma once
 
@@ -14,4 +14,7 @@ class PROJECTHOPLOMANCER_API ANPCShockDrone : public ABaseNPC
 {
 	GENERATED_BODY()
 	
+public:
+	// Sets default values for this character's properties
+	ANPCShockDrone();
 };
