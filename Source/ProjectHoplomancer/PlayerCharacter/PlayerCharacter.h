@@ -112,6 +112,8 @@ protected:
 
 	// Weapons the player is carrying, both equipped and unequipped.
 	TArray<ABaseWeapon*> CarriedWeapons;
+	// Current index of the equipped weapon.
+	int CurrWeaponIndex;
 
 	// Gun muzzle offset from the camera location.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)

@@ -33,6 +33,7 @@ APlayerCharacter::APlayerCharacter()
 	MaxHealth = 100;
 	CurrentHealth = MaxHealth;
 	IsAlive = true;
+	CurrWeaponIndex = -1;
 
 	// Camera recoil stuff.
 	CameraRotMod = FRotator(0.0, 0.0, 0.0);
@@ -101,7 +102,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump);
 		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::PrimaryAttack);
 		EnhancedInputComponent->BindAction(SecondaryAttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SecondaryAttack);
-		EnhancedInputComponent->BindAction(SelectWeaponAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SelectWeapon);
+		EnhancedInputComponent->BindAction(SelectWeaponAction, ETriggerEvent::Started, this, &APlayerCharacter::SelectWeapon);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ReloadWeapon);
 	}
 
@@ -188,6 +189,7 @@ bool APlayerCharacter::SwitchToWeapon(int wpnIndex)
 		CurrWeapon = CarriedWeapons[wpnIndex];  // Switch out the pointer with the new one at the given index.
 		if (CurrWeapon != nullptr)
 		{
+			CurrWeaponIndex = wpnIndex;
 			CurrWeapon->Equip();
 			CurrWeapon->SetWielder(this);
 			switchedSuccessfully = true;
@@ -361,7 +363,7 @@ void APlayerCharacter::SelectWeapon(const FInputActionValue& Value)
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Invoking SelectWeapon."));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Invoking SelectWeapon."));
 
 	APlayerController* pc = Cast<APlayerController>(Controller);
 	TArray<FKey> keys = EnhancedInputSubsystem->QueryKeysMappedToAction(SelectWeaponAction);
@@ -369,10 +371,10 @@ void APlayerCharacter::SelectWeapon(const FInputActionValue& Value)
 	int index = 0;
 	for (FKey key : keys)
 	{
-		if (pc->IsInputKeyDown(key))
+		if (pc->IsInputKeyDown(key) && index != CurrWeaponIndex)
 		{
+			// Only try to switch if the index differs from the current!
 			FString keyPressed = key.ToString();
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Input key index is %i."), index));
 			SwitchToWeapon(index);
 			break;
 		}
