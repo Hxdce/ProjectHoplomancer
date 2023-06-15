@@ -10,6 +10,7 @@
 // This include always comes last:
 #include "BasePickupableItem.generated.h"
 
+
 UCLASS()
 class PROJECTHOPLOMANCER_API ABasePickupableItem : public AActor
 {

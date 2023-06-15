@@ -292,5 +292,21 @@ int ABaseWeapon::GetTotalAmmoCount()
 void ABaseWeapon::GiveAmmo(int AmmoAmount)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Adding AmmoAmount's value to %s"), *PrintName));
+	int amountBefore = TotalAmmoCount;
 	TotalAmmoCount = FMath::Min(TotalAmmoCount + AmmoAmount, AmmoMax);
+	int amountGiven = TotalAmmoCount - amountBefore;
+	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
+	if (player != nullptr && player->IsAlive)
+	{
+		FString message;
+		if (amountGiven > 1)
+		{
+			message = FString::Printf(TEXT("Picked up %i rounds for %s"), amountGiven, *PrintName);
+		}
+		else
+		{
+			message = FString::Printf(TEXT("Picked up 1 round for %s"), *PrintName);
+		}
+		player->OnPlayerItemPickup.Broadcast(message);
+	}
 }

@@ -29,6 +29,7 @@ class UEnhancedInputLocalPlayerSubsystem;
 // Custom delegate signatures:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathSignature)
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerItemPickupSignature, FString, StringToPrint)
 
 UCLASS()
 class PROJECTHOPLOMANCER_API APlayerCharacter : public ABaseGameCharacter
@@ -191,4 +192,7 @@ public:
 	// On Player death delegate, for binding to OTHER THINGS.
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="EventDispatchers")
 	FPlayerDeathSignature OnPlayerDeath;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="EventDispatchers")
+	FPlayerItemPickupSignature OnPlayerItemPickup;
 };
