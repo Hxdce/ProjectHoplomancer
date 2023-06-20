@@ -27,9 +27,8 @@ class UEnhancedInputLocalPlayerSubsystem;
 
 
 // Custom delegate signatures:
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathSignature)
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerItemPickupSignature, FString, StringToPrint)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeathSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerItemPickupSignature, FString, StringToPrint);
 
 UCLASS()
 class PROJECTHOPLOMANCER_API APlayerCharacter : public ABaseGameCharacter

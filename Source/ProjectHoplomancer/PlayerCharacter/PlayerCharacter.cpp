@@ -171,6 +171,9 @@ bool APlayerCharacter::TakeWeapon(ABaseWeapon* wpn)
 		wpn->SetActorEnableCollision(false);
 		wpn->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 		wpn->SetThirdPersonMeshVisibility(false);
+		// Create the HUD pickup history message:
+		FString message = FString::Printf(TEXT("Picked up a %s"), *wpn->PrintName);
+		OnPlayerItemPickup.Broadcast(message);
 	}
 	return tookSuccessfully;
 }
@@ -292,6 +295,7 @@ void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRo
 // Handle and decay any camera recoiling effects e.g. from weapon recoil, injury, landing from falls, etc.
 void APlayerCharacter::DecayCameraRecoilRotation(float DeltaTime)
 {
+	// Todo: Make this use vector math instead of rotator math. Yaw alteration decreases when looking more vertical!
 	if (!CameraRotMod.IsNearlyZero(0.001) || !CameraRecoilVelocity.IsNearlyZero(0.001))
 	{
 		CameraRotMod += CameraRecoilVelocity * DeltaTime;

@@ -21,7 +21,7 @@ class USoundBase;
 
 
 // Custom delegate signatures:
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponFireSignature, class AActor*, Instigator, FVector, Location)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponFireSignature, class AActor*, Instigator, FVector, Location);
 
 
 UCLASS()
