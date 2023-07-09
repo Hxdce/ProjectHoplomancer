@@ -15,7 +15,10 @@ APistol10mm::APistol10mm()
 	// Default values for weapon stats:
 	PrintName = "10mm Pistol";
 	DamagePrimary = 20.0f;
-	WeaponSpread = 0.5;
+	WeaponAccuracy = 0.5;
+	RecoilSpreadMax = 3.0;
+	RecoilSpreadTimeMax = 0.75;
+	RecoilSpreadTimePerShot = 0.25;
 	Firerate = 0.33333f;
 	ProjectileVelocity = 10000.0f;
 	RecoilPitchMin = 2.0f;
@@ -47,7 +50,7 @@ void APistol10mm::Tick(float DeltaTime)
 
 
 // Primary attack!
-void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
+void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection)
 {
 	UWorld* World = GetWorld();
 	// Basic check for valid wielder + valid world + can't fire faster than weapon firerate + can't fire while reloading.
@@ -72,7 +75,10 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			SP.Instigator = SP.Owner->GetInstigator();
 		}
 
-		ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleRotation, SP);
+		// Add any spread penalties to the muzzle direction.
+		AddWeaponSpreadPenalties(&MuzzleDirection);
+
+		ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleDirection.Rotation(), SP);
 		if (Projectile)
 		{
 			fired = true;
@@ -83,9 +89,9 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 			Projectile->DamageValue = DamagePrimary;
 
 			// Set the projectile's initial trajectory.
-			FVector FiringDirection = MuzzleRotation.Vector();
-			// Randomize projectile direction for weapon's cone of fire.
-			AddSpreadToProjectile(&FiringDirection);
+			FVector FiringDirection = MuzzleDirection;
+			// Randomize projectile direction for weapon's baseline cone of fire.
+			AddBaselineSpreadToProjectile(&FiringDirection);
 			// Fire the projectile.
 			Projectile->FireInDirection(FiringDirection);
 
@@ -126,6 +132,6 @@ void APistol10mm::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator
 
 
 // Secondary attack!
-void APistol10mm::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
+void APistol10mm::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection)
 {
 }

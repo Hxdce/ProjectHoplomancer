@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "../ProjectHoplomancerGameModeBase.h"
 #include "../Actors/BaseWeapon.h"
@@ -70,8 +71,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, FString::Printf(TEXT("CameraRotMod.Pitch: %f\nCameraRotMod.Yaw: %f\nCameraRotMod.Roll: %f"), CameraRotMod.Pitch, CameraRotMod.Yaw, CameraRotMod.Roll));
-	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, FString::Printf(TEXT("CameraRotMaxPitchChange: %f"), CameraRotMaxPitchChange));
+	//GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, FString::Printf(TEXT("CameraRotMod.Pitch: %f\nCameraRotMod.Yaw: %f\nCameraRotMod.Roll: %f"), CameraRotMod.Pitch, CameraRotMod.Yaw, CameraRotMod.Roll));
+	//GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, FString::Printf(TEXT("CameraRotMaxPitchChange: %f"), CameraRotMaxPitchChange));
 
 	DecayCameraRecoilRotation(DeltaTime);
 
@@ -282,13 +283,13 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 
 // For calculating where projectiles originate from and what direction they should face.
-void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation)
+void APlayerCharacter::CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FVector* OutMuzzleDirection)
 {
 	// Camera location is the actor's location + the camera's current location relative to its parent.
 	*OutMuzzleLocation = GetActorLocation() + PlayerCamera->GetRelativeLocation();  // + FTransform(CameraRotation).TransformVector(MuzzleOffset);
 
-	// Get the camera rotation as the muzzle rotation.
-	*OutMuzzleRotation = GetViewRotation();
+	// Calculate the muzzle direction from the camera's rotation.
+	*OutMuzzleDirection = GetViewRotation().Vector();
 }
 
 
@@ -336,10 +337,10 @@ void APlayerCharacter::PrimaryAttack(const FInputActionValue& Value)
 
 	// Point of aim stuff.
 	FVector MuzzleLocation;
-	FRotator MuzzleRotation;
-	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
+	FVector MuzzleDirection;
+	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleDirection);
 
-	CurrWeapon->PrimaryAttack(this, MuzzleLocation, MuzzleRotation);
+	CurrWeapon->PrimaryAttack(this, MuzzleLocation, MuzzleDirection);
 }
 
 
@@ -353,9 +354,9 @@ void APlayerCharacter::SecondaryAttack(const FInputActionValue& Value)
 
 	// Point of aim stuff.
 	FVector MuzzleLocation;
-	FRotator MuzzleRotation;
-	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleRotation);
-	CurrWeapon->SecondaryAttack(this, MuzzleLocation, MuzzleRotation);
+	FVector MuzzleDirection;
+	CalculateMuzzlePointOfAim(&MuzzleLocation, &MuzzleDirection);
+	CurrWeapon->SecondaryAttack(this, MuzzleLocation, MuzzleDirection);
 }
 
 

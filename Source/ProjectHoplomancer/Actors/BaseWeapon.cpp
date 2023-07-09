@@ -2,9 +2,9 @@
 
 
 #include "../Actors/BaseWeapon.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "../PlayerCharacter/PlayerCharacter.h"
-#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -35,6 +35,9 @@ ABaseWeapon::ABaseWeapon()
 	// Default values for weapon sats.
 	DamagePrimary = 10.0;
 	DamageSecondary = 10.0;
+	RecoilSpreadMax = 5.0;
+	RecoilSpreadTimeMax = 2.0;
+	RecoilSpreadTimePerShot = 0.5;
 	Firerate = 0.5;
 	ProjectileVelocity = 5000.0;
 	ReloadDuration = 1.0;
@@ -67,6 +70,11 @@ void ABaseWeapon::Tick(float DeltaTime)
 	if (QueuedReload)
 	{
 		ReloadStart();
+	}
+	if (IsEquipped)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Green, FString::Printf(TEXT("WeaponSpreadRecoilPenaltyTime: %f"), WeaponSpreadRecoilPenaltyTime));
+		DecayWeaponSpreadRecoilPenaltyTime(DeltaTime);
 	}
 }
 
@@ -107,29 +115,36 @@ void ABaseWeapon::Unequip()
 	IsReloading = false;  // Cancel reloading.
 	QueuedReload = false;  // Cancel queued reloading.
 	IsEquipped = false;
+	WeaponSpreadRecoilPenaltyTime = 0.0;  // This *might* make weapon switching a little exploitable if the switching time is fast enough...
 }
 
 
-void ABaseWeapon::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
+void ABaseWeapon::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection)
 {
 	ReceiveWeaponFire(Parent, MuzzleLocation);
 	OnWeaponFire.Broadcast(Parent, MuzzleLocation);
 }
 
 
-void ABaseWeapon::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
+void ABaseWeapon::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection)
 {
 }
 
 
-void ABaseWeapon::AddSpreadToProjectile(FVector* FiringDirection)
+void ABaseWeapon::AddBaselineSpreadToProjectile(FVector* FiringDirection)
 {
-	// From the player's POV, a weapon's random spread is seen as a distribution within the frustum of a cone,
-	// which is basically a circle. The diameter of this circle is represented in degrees with WeaponSpread.
-	// We simply pick a random vector within this cone frustum to create spread. WeaponSpread/2 is its radius.
+	// From the player's POV, a weapon's random intrinsic spread is seen as a distribution within the frustum of a
+	// cone, which is basically a circle. The diameter of this circle is represented in degrees with WeaponAccuracy.
+	// We simply pick a random vector within this cone frustum to create spread. WeaponAccuracy/2 is its radius.
 	
 	// Turns out Unreal Engine has a built in function for this that works flawlessly. How convenient!
-	(*FiringDirection) = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(*FiringDirection, WeaponSpread/2);
+	(*FiringDirection) = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(*FiringDirection, WeaponAccuracy/2);
+}
+
+
+void ABaseWeapon::AddWeaponSpreadPenalties(FVector* FiringDirection)
+{
+	(*FiringDirection) = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(*FiringDirection, (GetWeaponSpreadTotal() - WeaponAccuracy) / 2);
 }
 
 
@@ -191,6 +206,7 @@ void ABaseWeapon::ReloadStart()
 	if (ReservoirCurrRoundCount < ReservoirMax && roundsAvailable > 0 && !IsReloading)
 	{
 		IsReloading = true;
+		WeaponSpreadRecoilPenaltyTime = RecoilSpreadTimeMax;
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
 
 		FTimerManager* TimerMgr = &GetWorld()->GetTimerManager();
@@ -254,12 +270,56 @@ void ABaseWeapon::DevReloadFinishSound()
 }
 
 
+double ABaseWeapon::CalculateWeaponSpreadRecoilPenalty()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
+	if (player == nullptr)
+	{
+		return 0.0;
+	}
+	else
+	{
+		return RecoilSpreadMax * WeaponSpreadRecoilPenaltyTime / RecoilSpreadTimeMax;
+	}
+}
+
+
+void ABaseWeapon::AddWeaponSpreadRecoilPenaltyTime(float Multiplier)
+{
+	double newAmount = WeaponSpreadRecoilPenaltyTime + RecoilSpreadTimePerShot * Multiplier;
+	WeaponSpreadRecoilPenaltyTime = FMath::Min(newAmount, RecoilSpreadTimeMax);
+}
+
+
+void ABaseWeapon::DecayWeaponSpreadRecoilPenaltyTime(float DeltaTime)
+{
+	if (WeaponSpreadRecoilPenaltyTime != 0.0 && !IsReloading)
+	{
+		double newAmount = WeaponSpreadRecoilPenaltyTime - DeltaTime;
+		WeaponSpreadRecoilPenaltyTime = FMath::Max(newAmount, 0.0);
+	}
+}
+
+
+double ABaseWeapon::GetWeaponSpreadRecoilPenaltyTime()
+{
+	return WeaponSpreadRecoilPenaltyTime;
+}
+
+
+double ABaseWeapon::GetWeaponSpreadTotal()
+{
+	return WeaponAccuracy + CalculateWeaponSpreadRecoilPenalty();
+}
+
+
 void ABaseWeapon::ApplyRecoil()
 {
 	if (Wielder == nullptr)
 	{
 		return;
 	}
+	AddWeaponSpreadRecoilPenaltyTime();
 	APlayerCharacter* player = Cast<APlayerCharacter>(Wielder);
 	if (player != nullptr)
 	{

@@ -2,6 +2,7 @@
 
 
 #include "./ShotgunPumpAction.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "../../PlayerCharacter/PlayerCharacter.h"
 
@@ -17,7 +18,10 @@ AShotgunPumpAction::AShotgunPumpAction()
 	PrintName = "Pump-Action Shotgun";
 	DamagePrimary = 7.0f;
 	ProjectileCount = 8;
-	WeaponSpread = 5.0;
+	WeaponAccuracy = 5.0;
+	RecoilSpreadMax = 5.0;
+	RecoilSpreadTimeMax = 0.3;
+	RecoilSpreadTimePerShot = 0.2;
 	Firerate = 1.15f;
 	ProjectileVelocity = 10000.0f;
 	ReloadDuration = 0.5f;
@@ -49,8 +53,17 @@ void AShotgunPumpAction::Tick(float DeltaTime)
 }
 
 
+void AShotgunPumpAction::AddBaselineSpreadToProjectile(FVector* FiringDirection)
+{
+	// With shotguns, we don't want to modify the weapon spread like we do with other weapons.
+	// We always want to keep the spread of the pellets the same no matter what, and simplify modify their direction
+	// by the total amount of spread MINUS the intrinsic pellet spread.
+	(*FiringDirection) = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(*FiringDirection, WeaponAccuracy / 2);
+}
+
+
 // Primary attack!
-void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
+void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection)
 {
 	UWorld* World = GetWorld();
 	// Basic check for valid wielder + valid world + can't fire faster than weapon firerate + can't fire while reloading.
@@ -79,13 +92,16 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 			SP.Instigator = SP.Owner->GetInstigator();
 		}
 
+		// Add any spread penalties to the muzzle direction.
+		AddWeaponSpreadPenalties(&MuzzleDirection);
+
 		// Create and fire off the shotgun pellets.
 		for (int i = 0; i < ProjectileCount; i++)
 		{
 			// Set the projectile's initial rotation.
-			FVector FiringDirection = MuzzleRotation.Vector();
+			FVector FiringDirection = MuzzleDirection;
 			// Randomize projectile directions for shotgun cone of fire.
-			AddSpreadToProjectile(&FiringDirection);
+			AddBaselineSpreadToProjectile(&FiringDirection);
 			ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, FiringDirection.Rotation(), SP);
 			if (Projectile)
 			{
@@ -105,10 +121,10 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 		
 		/*
 		FVector traceStart = MuzzleLocation;
-		FVector traceEnd = MuzzleLocation + MuzzleRotation.Vector() * 100000.0f;
+		FVector traceEnd = MuzzleLocation + MuzzleDirection * 100000.0f;
 
 		//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 5.0f, 0, 2.0f);
-		float coneW = FMath::DegreesToRadians(WeaponSpread/2.0);
+		float coneW = FMath::DegreesToRadians(WeaponAccuracy/2.0);
 		float coneH = coneW;
 		DrawDebugCone(GetWorld(), traceStart, traceEnd, 100000.0f, coneW, coneH, 32, FColor::Red, false, 5.0f);
 		*/
@@ -143,7 +159,7 @@ void AShotgunPumpAction::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, F
 
 
 // Secondary attack!
-void AShotgunPumpAction::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
+void AShotgunPumpAction::SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection)
 {
 
 }
@@ -179,6 +195,7 @@ void AShotgunPumpAction::ReloadStart()
 	if (ReservoirCurrRoundCount < ReservoirMax && roundsAvailable > 0 && !IsReloading)
 	{
 		IsReloading = true;
+		WeaponSpreadRecoilPenaltyTime = RecoilSpreadTimeMax;
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Reloading Weapon!"));
 		// Set timed function for inserting a shell.
 		FTimerManager* TimerMgr = &GetWorld()->GetTimerManager();

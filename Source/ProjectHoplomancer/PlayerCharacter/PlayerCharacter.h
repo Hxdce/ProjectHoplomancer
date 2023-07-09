@@ -127,7 +127,7 @@ protected:
 	void SecondaryAttack(const FInputActionValue& Value);
 	void SelectWeapon(const FInputActionValue& Value);
 	void ReloadWeapon(const FInputActionValue& Value);
-	void CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FRotator* OutMuzzleRotation);
+	void CalculateMuzzlePointOfAim(FVector* OutMuzzleLocation, FVector* OutMuzzleDirection);
 	void DecayCameraRecoilRotation(float DeltaTime);
 
 public:

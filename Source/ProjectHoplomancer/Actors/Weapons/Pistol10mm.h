@@ -26,7 +26,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
+	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection) override;
 
-	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
+	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection) override;
 };

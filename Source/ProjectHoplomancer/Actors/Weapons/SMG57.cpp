@@ -13,7 +13,10 @@ ASMG57::ASMG57()
 
 	PrintName = "5.7mm SMG";
 	DamagePrimary = 4.0f;
-	WeaponSpread = 1.5;
+	WeaponAccuracy = 1.5;
+	RecoilSpreadMax = 2.5;
+	RecoilSpreadTimeMax = 0.28;
+	RecoilSpreadTimePerShot = 0.08;
 	Firerate = 0.06666f;
 	ProjectileVelocity = 10000.0f;
 	RecoilPitchMin = 0.75f;
@@ -45,7 +48,7 @@ void ASMG57::Tick(float DeltaTime)
 
 
 // Primary attack!
-void ASMG57::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation)
+void ASMG57::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection)
 {
 	UWorld* World = GetWorld();
 	// Basic check for valid wielder + valid world + can't fire faster than weapon firerate + can't fire while reloading.
@@ -70,7 +73,10 @@ void ASMG57::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator Muzz
 			SP.Instigator = SP.Owner->GetInstigator();
 		}
 
-		ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleRotation, SP);
+		// Add any spread penalties to the muzzle direction.
+		AddWeaponSpreadPenalties(&MuzzleDirection);
+
+		ABaseProjectile* Projectile = World->SpawnActor<ABaseProjectile>(WeaponProjectile, MuzzleLocation, MuzzleDirection.Rotation(), SP);
 		if (Projectile)
 		{
 			fired = true;
@@ -79,11 +85,10 @@ void ASMG57::PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator Muzz
 			Projectile->MovementComponent->InitialSpeed = ProjectileVelocity;
 			Projectile->MovementComponent->MaxSpeed = ProjectileVelocity;
 			Projectile->DamageValue = DamagePrimary;
-
 			// Set the projectile's initial trajectory.
-			FVector FiringDirection = MuzzleRotation.Vector();
+			FVector FiringDirection = MuzzleDirection;
 			// Randomize projectile direction for weapon's cone of fire.
-			AddSpreadToProjectile(&FiringDirection);
+			AddBaselineSpreadToProjectile(&FiringDirection);
 			// Fire the projectile.
 			Projectile->FireInDirection(FiringDirection);
 

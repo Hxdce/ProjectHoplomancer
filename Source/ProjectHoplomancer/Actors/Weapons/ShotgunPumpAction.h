@@ -40,12 +40,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Overridden project code class functions:
+
+	// This is used to add random spread to a fired projectile, creating the weapon's cone of fire.
+	// This is independent of any penalties and represents the best possible accuracy of the weapon.
+	virtual void AddBaselineSpreadToProjectile(FVector* FiringDirection);
 
 	// Proprietary functions below:
 
-	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
+	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection) override;
 
-	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation) override;
+	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection) override;
 
 	virtual void ReloadStart() override;
 

@@ -86,6 +86,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
 	TSubclassOf<class ABaseProjectile> WeaponProjectile;
 
+	// ---
+	// Weapon Spread stuff:
+
+	// The current accuracy penalty saturation and recovery time from recoil effects, in seconds.
+	UPROPERTY(EditAnywhere, Category=Camera)
+	double WeaponSpreadRecoilPenaltyTime;
+
+	// The accuracy penalty from player movement.
+	UPROPERTY(EditAnywhere, Category=Camera)
+	double WeaponSpreadMovementPenalty;
+
+	// Sum of the held weapon's inherent accuracy + recoil and movement penalties.
+	UPROPERTY(EditAnywhere, Category=Camera)
+	double WeaponSpreadFinal;
+
 public:
 	// Variable for the damage of the primary fire mode.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
@@ -98,7 +113,19 @@ public:
 	// Spread value for the fired projectile(s). This is the best possible accuracy this weapon can achieve.
 	// Represents the diameter of the cone of fire from the player's POV, in degrees.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
-	double WeaponSpread;
+	double WeaponAccuracy;
+
+	// The maximum amount of accuracy penalty (spread) from weapon recoil when the player's time value reaches its max.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	double RecoilSpreadMax;
+
+	// The maximum recovery time when the accuracy penalty value reaches its max.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	double RecoilSpreadTimeMax;
+
+	// How much time is added to the accuracy penalty value per shot.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
+	double RecoilSpreadTimePerShot;
 
 	// Variable for the weapon's fire rate.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=WeaponStats)
@@ -172,18 +199,25 @@ public:
 	virtual void Unequip();
 
 	// Primary attack function.
-	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
+	virtual void PrimaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection);
 
 	// Secondary attack function.
-	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FRotator MuzzleRotation);
+	virtual void SecondaryAttack(AActor* Parent, FVector MuzzleLocation, FVector MuzzleDirection);
 
 	// ^^^
 	// Might be wise to remove the "Parent" parameter from the attack functions soon,
 	// since having the "Wielder" member variable makes it redundant!
 
-	// This is used to add random spread to a fired projectile, creating the weapon's cone of fire.
-	// The member variable "WeaponSpread" defines the diameter of this cone from the player's POV in degrees.
-	virtual void AddSpreadToProjectile(FVector* FiringDirection);
+	// This is used to add the baseline random spread to a fired projectile, based on its WeaponAccuracy value.
+	// This is independent of any penalties and represents the best possible accuracy of the weapon.
+	// WeaponAccuracy represents the diameter of the cone of fire.
+	virtual void AddBaselineSpreadToProjectile(FVector* FiringDirection);
+
+	// This is used to add spread penalties to the baseline cone of fire of the weapon, i.e. a cone of fire
+	// within a cone of fire essentially. The reason we do this independent of a weapon's baseline spread is
+	// so weapons that fire multiple projectiles at once e.g. shotguns won't have their baseline weapon
+	// spread altered, only where within the penalty cone of fire that baseline spread goes.
+	virtual void AddWeaponSpreadPenalties(FVector* FiringDirection);
 
 	// Get next time we can fire.
 	virtual float GetNextFireTime();
@@ -208,6 +242,19 @@ public:
 	virtual void ReloadFinish();
 
 	virtual void DevReloadFinishSound();  // Probably gonna change how this works at some point!
+
+	UFUNCTION(BlueprintCallable)
+	virtual double CalculateWeaponSpreadRecoilPenalty();
+
+	void AddWeaponSpreadRecoilPenaltyTime(float Multiplier=1.0);
+
+	void DecayWeaponSpreadRecoilPenaltyTime(float DeltaTime);
+
+	double GetWeaponSpreadRecoilPenaltyTime();
+
+	// Gets the total amount of spread in degrees for the current weapon, penalties and all.
+	UFUNCTION(BlueprintCallable)
+	virtual double GetWeaponSpreadTotal();
 
 	virtual void ApplyRecoil();
 
